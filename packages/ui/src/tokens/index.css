@@ -1,0 +1,12 @@
+/* Import theme variables FIRST so Tailwind's var() references resolve. */
+@import "./themes.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Make the page background + text follow the active theme by default. */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}

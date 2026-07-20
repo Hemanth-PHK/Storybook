@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>US-5 · Developer Onboarding Guide</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Inter", "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color: #1f2430; font-size: 9.1pt; line-height: 1.46;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+
+  .cover-page { page-break-after: always; }
+  .section { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+  pre, table, .box, .mock, .strip, .hero, .stp, .filecard, .kc { page-break-inside: avoid; }
+
+  .wrap { padding: 10mm 15mm; }
+
+  h1 { font-size: 27pt; letter-spacing:-0.6pt; line-height:1.05; font-weight:800; }
+  h2 {
+    font-size: 13.5pt; color:#312e81; letter-spacing:-0.3pt; font-weight:700;
+    display:flex; align-items:center; gap:3mm; margin-bottom:2mm; margin-top:1mm;
+    padding-bottom:1.2mm; border-bottom:1.5pt solid #e8e5f7;
+  }
+  h2 .step-badge {
+    background:#4338ca; color:#fff; font-size:9.5pt; font-weight:800;
+    width:7.5mm; height:7.5mm; border-radius:2.5mm; display:inline-flex;
+    align-items:center; justify-content:center; flex-shrink:0;
+  }
+  h3 { font-size:10.5pt; color:#4338ca; margin:3mm 0 1mm; font-weight:700; }
+  h4 { font-size:9pt; color:#6d28d9; margin:2.5mm 0 0.5mm; font-weight:700; text-transform:uppercase; letter-spacing:0.4pt; }
+  p { margin:1.4mm 0; }
+  strong { color:#111827; }
+
+  /* INLINE CODE — high contrast */
+  code {
+    font-family:"DejaVu Sans Mono","Cascadia Code",Consolas,monospace; font-size:8.4pt;
+    background:#eef2ff; color:#4338ca; padding:0.3mm 1.5mm; border-radius:2pt;
+    font-weight:600;
+  }
+
+  /* CODE BLOCKS — light theme, dark text, high contrast, labeled */
+  .code-wrap { margin:1.6mm 0; border:0.75pt solid #d9deea; border-radius:5pt; overflow:hidden; }
+  .code-label {
+    background:#eef1f7; color:#4b5563; font-size:7pt; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.5pt; padding:1.2mm 3mm;
+    border-bottom:0.75pt solid #d9deea; font-family:"Inter","Segoe UI",sans-serif;
+  }
+  pre {
+    background:#fbfcfe; color:#1f2937; padding:2.5mm 3.5mm;
+    font-family:"DejaVu Sans Mono","Cascadia Code",Consolas,monospace; font-size:7.9pt; line-height:1.55;
+    white-space:pre-wrap;
+  }
+  .cm{color:#7a8394; font-style:italic}   /* comment */
+  .kw{color:#7c3aed; font-weight:600}      /* keyword */
+  .st{color:#047857}                        /* string / token */
+  .fn{color:#2563eb}                        /* function/type */
+  .rd{color:#be123c}                        /* wrong / warning */
+
+  ul,ol{ margin:1.4mm 0 1.4mm 5mm } li{ margin:0.7mm 0 }
+
+  /* COVER */
+  .cover { height:297mm; background:#171438; color:#fff; position:relative; overflow:hidden; }
+  .cover-band { position:absolute; top:0; left:0; right:0; height:124mm; background:#312e81; }
+  .cover-mesh { position:absolute; top:0; right:0; width:90mm; height:124mm;
+    background:#3f3aa0; opacity:0.5; }
+  .cover-accent { position:absolute; top:120mm; left:0; right:0; height:4mm; background:#7c3aed; }
+  .cover-inner { position:relative; padding:26mm 20mm; }
+  .kicker { display:inline-block; background:#7c3aed; color:#fff; font-size:8pt;
+    font-weight:700; letter-spacing:1.5pt; text-transform:uppercase; padding:2mm 5mm; border-radius:99pt; }
+  .cover h1 { margin:8mm 0 4mm; color:#fff; }
+  .cover .sub { font-size:12.5pt; color:#c7d2fe; max-width:140mm; line-height:1.55; }
+  .cover .who { margin-top:11mm; font-size:10pt; color:#ddd6fe; }
+  .name-pill { display:inline-block; background:rgba(255,255,255,0.14); color:#fff; font-weight:700;
+    font-size:8.5pt; padding:1.3mm 3.5mm; border-radius:99pt; margin-right:2mm; border:0.5px solid rgba(255,255,255,0.25); }
+  .cover-stats { position:absolute; bottom:36mm; left:20mm; right:20mm; display:flex; gap:5mm; }
+  .cstat { flex:1; background:rgba(255,255,255,0.07); border:0.5px solid rgba(255,255,255,0.16);
+    border-radius:5pt; padding:5mm 4mm; }
+  .cstat .k { font-size:21pt; font-weight:800; color:#a78bfa; line-height:1; }
+  .cstat .l { font-size:7.6pt; color:#c7d2fe; margin-top:2mm; text-transform:uppercase; letter-spacing:0.5pt; }
+  .cover-foot { position:absolute; bottom:14mm; left:20mm; right:20mm;
+    display:flex; justify-content:space-between; color:#a78bfa; font-size:8.5pt;
+    border-top:0.5px solid rgba(255,255,255,0.18); padding-top:4mm; }
+
+  /* TOC */
+  .toc { background:#f7f8fc; border:0.75pt solid #e3e6f0; border-radius:6pt; padding:5mm 6mm; margin:3mm 0; }
+  .toc h4 { margin-top:0; color:#4338ca; }
+  .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:1mm 8mm; margin-top:2mm; }
+  .toc-item { font-size:8.8pt; color:#374151; padding:0.6mm 0; }
+  .toc-item b { color:#4338ca; }
+
+  /* callouts */
+  .box{ border-radius:5pt; padding:2mm 3.5mm 2mm 4mm; margin:1.6mm 0; border-left:3.5pt solid; font-size:8.8pt; }
+  .box .lab{ font-weight:700; font-size:7.4pt; text-transform:uppercase; letter-spacing:0.5pt; display:block; margin-bottom:0.8mm; }
+  .tip{ background:#f5f3ff; border-color:#7c3aed; } .tip .lab{ color:#6d28d9; }
+  .win{ background:#ecfdf5; border-color:#059669; } .win .lab{ color:#047857; }
+  .warn{ background:#fff7ed; border-color:#ea580c; } .warn .lab{ color:#c2410c; }
+  .note{ background:#eff6ff; border-color:#2563eb; } .note .lab{ color:#1d4ed8; }
+
+  /* tables */
+  table{ border-collapse:collapse; width:100%; margin:2mm 0; font-size:8.7pt; }
+  th,td{ border:0.5px solid #e3e6f0; padding:1.6mm 2.5mm; text-align:left; vertical-align:top; }
+  th{ background:#eef2ff; font-weight:700; color:#3730a3; font-size:8.3pt; }
+  tr:nth-child(even) td{ background:#fafbfe; }
+
+  /* keep/change cards */
+  .kc { display:flex; gap:4mm; margin:2mm 0; }
+  .kc .kc-col { flex:1; border-radius:5pt; padding:2.5mm 3.5mm; }
+  .kc-keep { background:#ecfdf5; border:0.75pt solid #a7f3d0; }
+  .kc-change { background:#fef2f2; border:0.75pt solid #fecaca; }
+  .kc h4 { margin-top:0; }
+  .kc-keep h4 { color:#047857; }
+  .kc-change h4 { color:#b91c1c; }
+  .kc ul { margin:1mm 0 0 4mm; font-size:8.6pt; }
+  .kc li { margin:0.8mm 0; }
+
+  /* mock storybook */
+  .mock{ border:0.75pt solid #d9deea; border-radius:6pt; overflow:hidden; margin:2.5mm 0; box-shadow:0 2mm 5mm rgba(49,46,129,0.07); }
+  .mbar{ background:#eef1f7; padding:1.5mm 3mm; border-bottom:0.5px solid #d9deea; display:flex; gap:1.5mm; align-items:center; }
+  .dot{ width:2.3mm; height:2.3mm; border-radius:50%; }
+  .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+  .mbar span{ font-size:7.2pt; color:#6b7280; margin-left:2mm; }
+  .mbody{ display:flex; min-height:38mm; font-size:7.5pt; }
+  .mside{ width:40mm; background:#fafbfe; border-right:0.5px solid #e3e6f0; padding:2mm 0; }
+  .mgrp{ padding:1mm 3mm; font-weight:700; font-size:6.5pt; text-transform:uppercase; color:#4338ca; letter-spacing:0.3pt; }
+  .mitem{ padding:1mm 3mm 1mm 6mm; color:#6b7280; }
+  .mitem.on{ background:#eef2ff; color:#4338ca; font-weight:700; border-left:2pt solid #4338ca; padding-left:5.2mm; }
+  .mmain{ flex:1; display:flex; flex-direction:column; }
+  .mtools{ padding:1.5mm 3mm; border-bottom:0.5px solid #e3e6f0; display:flex; gap:3mm; align-items:center; background:#fff; }
+  .mtool{ font-size:6.9pt; color:#6b7280; }
+  .mtool.hl{ background:#fde68a; color:#92400e; padding:0.6mm 2mm; border-radius:2pt; font-weight:700; border:0.5px dashed #d97706; }
+  .mcanvas{ flex:1; display:flex; align-items:center; justify-content:center; background:#fff; padding:5mm; }
+  .mbtn{ padding:2mm 4mm; border-radius:2.5pt; color:#fff; font-weight:600; font-size:8pt; border:none; }
+
+  /* theme strip */
+  .strip{ display:flex; border:0.75pt solid #e3e6f0; border-radius:6pt; overflow:hidden; margin:2.5mm 0; text-align:center; }
+  .scell{ flex:1; padding:4mm 1.5mm; border-right:0.5px solid #e3e6f0; }
+  .scell:last-child{ border-right:none; }
+  .scell .tl{ font-size:7pt; margin-top:2mm; }
+
+  /* steps */
+  .stp{ display:flex; gap:3mm; margin:1.5mm 0; align-items:flex-start; }
+  .stp-n{ flex-shrink:0; width:5.5mm; height:5.5mm; border-radius:2mm; background:#4338ca; color:#fff;
+    font-weight:700; font-size:7.6pt; display:flex; align-items:center; justify-content:center; }
+  .stp-b{ flex:1; font-size:8.8pt; }
+  .stp-b p{ margin:0 0 0.6mm; }
+
+  /* file anatomy cards */
+  .filecard{ border:0.75pt solid #e3e6f0; border-radius:6pt; overflow:hidden; margin:2.5mm 0; }
+  .fc-head{ background:#312e81; padding:2mm 3.5mm; display:flex; align-items:center; justify-content:space-between; }
+  .fc-name{ font-family:"Cascadia Code",monospace; font-size:9pt; color:#fff; font-weight:700; }
+  .fc-tag{ font-size:7.4pt; color:#c7d2fe; background:rgba(255,255,255,0.12); padding:0.6mm 2.5mm; border-radius:99pt; }
+  .fc-body{ padding:2.5mm 3.5mm; }
+  .fc-q { font-size:8.9pt; color:#4338ca; font-weight:700; margin-bottom:1mm; }
+
+  /* hero */
+  .hero{ background:#171438; color:#fff; border-radius:6pt; padding:5mm 6mm; margin:2.5mm 0; }
+  .hero .k{ font-size:7.4pt; letter-spacing:1pt; text-transform:uppercase; color:#a78bfa; }
+  .hero .big{ font-size:13.5pt; font-weight:800; margin:1.5mm 0; letter-spacing:-0.3pt; }
+  .hero .sm{ font-size:8.8pt; color:#c7d2fe; }
+  .hero code{ background:#3b357a; color:#fbcfe8; }
+
+  .check{ list-style:none; margin:2mm 0; padding:0; }
+  .check li{ padding:1.5mm 0 1.5mm 6mm; position:relative; border-bottom:0.5px solid #eef1f7; font-size:8.9pt; }
+  .check li::before{ content:"✓"; position:absolute; left:0.5mm; top:1.5mm; color:#059669; font-weight:800; }
+
+  .foot{ margin-top:4mm; padding-top:2mm; border-top:0.5px solid #e3e6f0; color:#9ca3af; font-size:7.4pt; display:flex; justify-content:space-between; }
+  .lead{ font-size:10pt; }
+  .two{ display:flex; gap:4mm } .two .col{ flex:1 }
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover-page">
+  <div class="cover">
+    <div class="cover-band"></div>
+    <div class="cover-mesh"></div>
+    <div class="cover-accent"></div>
+    <div class="cover-inner">
+      <span class="kicker">US-5 · Design System in Code</span>
+      <h1>Developer<br>Onboarding Guide</h1>
+      <p class="sub">A complete, self-service walkthrough — from cloning the repo to shipping your first theme-ready component. Follow it start to finish; it answers your questions before you ask them.</p>
+      <div class="who">
+        Prepared for &nbsp;
+        <span class="name-pill">Mahesh</span>
+        <span class="name-pill">Aarnesh</span>
+        <span class="name-pill">Bhuvana</span>
+      </div>
+    </div>
+    <div class="cover-stats">
+      <div class="cstat"><div class="k">8</div><div class="l">Components</div></div>
+      <div class="cstat"><div class="k">3</div><div class="l">Files each</div></div>
+      <div class="cstat"><div class="k">6</div><div class="l">Color themes</div></div>
+      <div class="cstat"><div class="k">1</div><div class="l">Golden rule</div></div>
+    </div>
+    <div class="cover-foot">
+      <span>Frontend Team · E-Learning Platform</span>
+      <span>Self-service · ~20 min read</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="wrap">
+
+  <div class="section">
+    <div class="toc">
+      <h4>What's in this guide</h4>
+      <div class="toc-grid">
+        <div class="toc-item"><b>1.</b> What we're building</div>
+        <div class="toc-item"><b>7.</b> The 3 files, in depth</div>
+        <div class="toc-item"><b>2.</b> What Storybook is</div>
+        <div class="toc-item"><b>8.</b> Opening a blank IDE</div>
+        <div class="toc-item"><b>3.</b> Connect to the repo &amp; clone</div>
+        <div class="toc-item"><b>9.</b> Keep this / change this</div>
+        <div class="toc-item"><b>4.</b> Tour of Storybook</div>
+        <div class="toc-item"><b>10.</b> Who builds what</div>
+        <div class="toc-item"><b>5.</b> The theme concept</div>
+        <div class="toc-item"><b>11.</b> "Done" checklist</div>
+        <div class="toc-item"><b>6.</b> The golden rule</div>
+        <div class="toc-item"><b>12.</b> The rules that matter</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">1</span> What we're building</h2>
+    <p class="lead">A <strong>reusable component library</strong> — one shared set of UI pieces (button, card, input…) that every screen of our e-learning platform is assembled from.</p>
+    <p>Instead of each of us building our own button on every page, we build each piece <strong>once, properly</strong>, and everyone reuses the same one. That gives us a consistent product and much faster screens later — like assembling Lego instead of moulding every brick by hand.</p>
+    <div class="box warn">
+      <span class="lab">This is not throwaway</span>
+      This code ships into the real product and we build on it for months. So we build it properly — real, clean, production code. Quality over speed.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">2</span> What is Storybook?</h2>
+    <p class="lead">A separate workshop that runs beside our app, where we build and view <strong>one component at a time, on its own</strong> — without opening the whole website.</p>
+    <div class="box tip">
+      <span class="lab">The analogy</span>
+      If the finished <strong>website is a car</strong>, <strong>Storybook is the workbench</strong> where you build and test each part — the headlight, the mirror — on its own before bolting it onto the car.
+    </div>
+    <p>You build your component here and instantly see it, flip it through its states, and check it in every theme. The word to know is <strong>"story"</strong> — one example of a component in one state (a normal button, a disabled button…). Writing those stories is part of your job.</p>
+    <div class="box note">
+      <span class="lab">Good news — the setup is already done</span>
+      You don't need to configure Storybook, install it separately, or wire anything up. <strong>I've already completed all of that in the repository.</strong> Your only setup task is to connect to the repo and clone it — the exact steps are on the next section. After that, Storybook just runs.
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>1</span></div>
+</div>
+
+<!-- ══════════ PAGE 2 — CLONE STEPS ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <h2><span class="step-badge">3</span> Connect to the repository &amp; clone</h2>
+    <p>Follow these in order. By the end, Storybook will be running on your machine. If a step errors, message me before continuing — don't guess.</p>
+
+    <h4>One-time prerequisites</h4>
+    <p>You need <strong>Git</strong> and <strong>Node.js 18+</strong> installed. Check in your terminal:</p>
+    <div class="code-wrap">
+      <div class="code-label">Terminal — check your tools</div>
+<pre><span class="cm"># each should print a version number</span>
+git --version
+node --version
+npm --version</pre>
+    </div>
+    <p style="font-size:8.7pt;">If any says "command not found": install <strong>Git</strong> from git-scm.com and <strong>Node.js (LTS)</strong> from nodejs.org, then reopen your terminal.</p>
+
+    <div class="stp"><div class="stp-n">1</div><div class="stp-b">
+      <p><strong>Create your GitHub account &amp; send me your username.</strong> If you don't already have one, sign up at github.com. Then send me your <strong>GitHub username</strong> — <em>I will add you as a collaborator on the repository once I receive it.</em> You can't clone a private repo until you've been added.</p>
+    </div></div>
+    <div class="stp"><div class="stp-n">2</div><div class="stp-b">
+      <p><strong>Accept the invitation.</strong> After I add you, you'll get an invite — check the email linked to your GitHub account, or open the repo link I share and click <strong>Accept invitation</strong>. You must accept before you can clone.</p>
+    </div></div>
+    <div class="stp"><div class="stp-n">3</div><div class="stp-b">
+      <p><strong>Copy the repo URL.</strong> On the repo's GitHub page, click the green <strong>Code</strong> button and copy the HTTPS URL (looks like <code>https://github.com/&lt;org&gt;/edtech-ui.git</code>).</p>
+    </div></div>
+    <div class="stp"><div class="stp-n">4</div><div class="stp-b">
+      <p><strong>Pick a folder and clone.</strong> In your terminal, go to where you keep projects, then clone:</p>
+      <div class="code-wrap"><div class="code-label">Terminal — clone the project</div>
+<pre>cd Desktop            <span class="cm"># or wherever you keep your code</span>
+git clone https://github.com/&lt;org&gt;/edtech-ui.git
+cd edtech-ui</pre></div>
+      <p style="font-size:8.5pt;">If Git asks you to sign in, use your GitHub username and a <strong>Personal Access Token</strong> as the password (GitHub → Settings → Developer settings → Personal access tokens). A normal password won't work for cloning.</p>
+    </div></div>
+    <div class="stp"><div class="stp-n">5</div><div class="stp-b">
+      <p><strong>Install dependencies.</strong> This reads the project and downloads everything it needs — <strong>including Storybook, automatically.</strong> Takes a minute; lots of text is normal.</p>
+      <div class="code-wrap"><div class="code-label">Terminal — install</div>
+<pre>npm install</pre></div>
+    </div></div>
+    <div class="stp"><div class="stp-n">6</div><div class="stp-b">
+      <p><strong>Start Storybook.</strong> It opens your browser at <code>localhost:6006</code>.</p>
+      <div class="code-wrap"><div class="code-label">Terminal — run</div>
+<pre>npm run storybook</pre></div>
+    </div></div>
+
+    <div class="box win">
+      <span class="lab">You're ready when</span>
+      The browser shows the Storybook interface and the terminal stays running (it won't return to the prompt — that's correct, leave it open). Saving a file auto-refreshes the browser, so you never restart it for normal edits. Open a <strong>second</strong> terminal tab if you need to run other commands.
+    </div>
+    <div class="box note">
+      <span class="lab">Daily workflow, going forward</span>
+      Each day: <code>git pull</code> to get the latest, then <code>npm run storybook</code> to work. Before sharing your work, create a branch (<code>git checkout -b feature/card</code>), commit, and push — I'll review it before it merges. Ask me if any of this is new to you; it's normal.
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>2</span></div>
+</div>
+
+<!-- ══════════ PAGE 3 — TOUR + THEME ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <h2><span class="step-badge">4</span> Tour of your workshop</h2>
+    <div class="mock">
+      <div class="mbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span>localhost:6006 — Storybook</span></div>
+      <div class="mbody">
+        <div class="mside">
+          <div class="mgrp">Components</div>
+          <div class="mitem on">Button</div>
+          <div class="mitem">Card</div>
+          <div class="mitem">Input</div>
+          <div class="mitem">Modal</div>
+          <div class="mitem">Nav</div>
+          <div class="mgrp">Theme</div>
+          <div class="mitem">ThemeSwitcher</div>
+        </div>
+        <div class="mmain">
+          <div class="mtools">
+            <span class="mtool">Canvas</span><span class="mtool">Docs</span>
+            <span class="mtool hl">🎨 Theme ▾</span>
+            <span class="mtool" style="margin-left:auto;">Controls</span>
+          </div>
+          <div class="mcanvas"><button class="mbtn" style="background:#4f46e5;">Click me</button></div>
+        </div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Part</th><th>What it does</th></tr>
+      <tr><td><strong>Left sidebar</strong></td><td>Every component. Click a name to view it; its states nest underneath.</td></tr>
+      <tr><td><strong>Center canvas</strong></td><td>Your component, rendered on its own — the workbench.</td></tr>
+      <tr><td><strong>🎨 Theme</strong></td><td>Switches the color theme. Your work-checking tool (step 5).</td></tr>
+      <tr><td><strong>Controls</strong></td><td>Live knobs to flip props (disabled, loading…) without editing code.</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">5</span> The one concept that matters: themes</h2>
+    <p class="lead">Click the <strong>🎨 Theme</strong> dropdown and switch themes. The same button, no code changed:</p>
+    <div class="strip">
+      <div class="scell" style="background:#ffffff;"><button class="mbtn" style="background:#4f46e5;">Click me</button><div class="tl" style="color:#64748b;">Scholar Indigo</div></div>
+      <div class="scell" style="background:#f6fafb;"><button class="mbtn" style="background:#0d9488;">Click me</button><div class="tl" style="color:#0f766e;">Teal Focus</div></div>
+      <div class="scell" style="background:#faf8fc;"><button class="mbtn" style="background:#7c3aed;">Click me</button><div class="tl" style="color:#6d28d9;">Violet</div></div>
+      <div class="scell" style="background:#0f172a;"><button class="mbtn" style="background:#818cf8;">Click me</button><div class="tl" style="color:#a3b0c2;">Midnight</div></div>
+    </div>
+    <p>Everything recolored from one click. <strong>Every component you build must do this automatically.</strong></p>
+
+    <h4>Why our platform needs this — and why it decides how you code</h4>
+    <p style="font-size:9pt;">Our e-learning platform has a <strong>dynamic theme-changing feature</strong>: a user clicks a palette icon in the corner and picks a theme, and the <em>entire</em> website instantly recolors to match. This isn't decoration — it's a real product requirement. And that one requirement is the reason we build every component a specific way. Here's the logic in order, so it clicks:</p>
+    <table>
+      <tr><th>Because we want…</th><th>…the code must…</th></tr>
+      <tr><td>The whole site to recolor on one click</td><td>never lock a color into a component</td></tr>
+      <tr><td>A component that never locks a color</td><td>refer to a color by a <em>name</em>, not a value</td></tr>
+      <tr><td>A color referred to by name</td><td>use a <strong>token</strong> like <code>bg-primary</code></td></tr>
+    </table>
+    <p style="font-size:9pt;">So <strong>tokens exist because the theme feature exists.</strong> If even one component hardcodes a color, that piece won't recolor when the user switches themes — it'll stay the wrong color while everything around it changes, and the feature visibly breaks. That's why "use tokens, never colors" isn't a style preference — it's what makes the product's headline feature actually work.</p>
+
+    <div class="box tip">
+      <span class="lab">The mechanism — the empty box idea</span>
+      Think of <code>bg-primary</code> as an empty box labelled "primary color." Your component says "paint me with the primary color" and never knows which one it is. The <strong>theme fills the box</strong>: pick Ocean → the box gets teal; pick Midnight → the box gets indigo. Your component never changes — only what's <em>in the box</em> does. Switch theme → box gets a new color → every component using that token recolors together. One dropdown, whole site recolored. That's the feature, and tokens are how it's built.
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>3</span></div>
+</div>
+
+<!-- ══════════ PAGE 4 — GOLDEN RULE ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <h2><span class="step-badge">6</span> The golden rule</h2>
+    <div class="hero">
+      <div class="k">The rule that governs everything you build</div>
+      <div class="big">Never write a real color. Use a token.</div>
+      <div class="sm">No <code>#hex</code>. No <code>bg-blue-500</code>. Always a token name like <code>bg-primary</code>. If you type a <code>#</code> for a color — stop, and use a token instead.</div>
+    </div>
+    <div class="two">
+      <div class="col">
+        <div class="code-wrap"><div class="code-label" style="background:#fef2f2; color:#b91c1c; border-color:#fecaca;">✗ Breaks theming</div>
+<pre><span class="rd">bg-blue-500 text-white</span>
+<span class="rd">bg-[#4f46e5]</span>
+<span class="rd">style={{ background:"#fff" }}</span></pre></div>
+      </div>
+      <div class="col">
+        <div class="code-wrap"><div class="code-label" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0;">✓ Follows the theme</div>
+<pre><span class="st">bg-primary text-on-primary</span>
+<span class="st">bg-surface text-text</span>
+<span class="st">border border-border</span></pre></div>
+      </div>
+    </div>
+    <h4>Your color menu — the only color words you need</h4>
+    <table>
+      <tr><th>For…</th><th>Use</th><th>For…</th><th>Use</th></tr>
+      <tr><td>Main / brand</td><td><code>bg-primary</code></td><td>Body text</td><td><code>text-text</code></td></tr>
+      <tr><td>Text on primary</td><td><code>text-on-primary</code></td><td>Muted text</td><td><code>text-muted</code></td></tr>
+      <tr><td>Page background</td><td><code>bg-bg</code></td><td>Borders</td><td><code>border-border</code></td></tr>
+      <tr><td>Card / surface</td><td><code>bg-surface</code></td><td>Success / error</td><td><code>text-success</code> · <code>bg-danger</code></td></tr>
+    </table>
+    <div class="box warn">
+      <span class="lab">Need a color that's not here?</span>
+      Don't invent a hex. Ask me — a new token gets added to every theme first, then you use it.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">7</span> The three files, in depth</h2>
+    <p class="lead">Every component lives in its <strong>own folder</strong>, and inside are the <strong>same three files</strong>. They divide one job into three responsibilities. Here's what each one is for, and why it exists.</p>
+    <table>
+      <tr><th>File</th><th>Responsibility</th><th>Answers the question</th></tr>
+      <tr><td><code>Name.tsx</code></td><td>The component itself</td><td>What is it &amp; how does it work?</td></tr>
+      <tr><td><code>Name.stories.tsx</code></td><td>The Storybook demos</td><td>Show it in every state</td></tr>
+      <tr><td><code>index.ts</code></td><td>The public export</td><td>How does the app import it?</td></tr>
+    </table>
+    <div class="box note">
+      <span class="lab">Folder &amp; naming convention</span>
+      Folder name = component name in <strong>PascalCase</strong> (<code>Card</code>, <code>FormFields</code>). The files inside match: <code>Card.tsx</code>, <code>Card.stories.tsx</code>, <code>index.ts</code>. Always these three names — an intern reading any folder knows instantly what's where. This sameness is a feature, not bureaucracy.
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>4</span></div>
+</div>
+
+<!-- ══════════ PAGE 5 — FILE 1 DEEP ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <div class="filecard">
+      <div class="fc-head"><span class="fc-name">Card.tsx</span><span class="fc-tag">File 1 · the component</span></div>
+      <div class="fc-body">
+        <p class="fc-q">What it is</p>
+        <p style="font-size:8.9pt;">The actual, real component that ends up on the website. Everything else in the folder exists to support this file. Read it as <strong>three parts</strong>, top to bottom:</p>
+      </div>
+    </div>
+    <div class="code-wrap"><div class="code-label">Card.tsx — the reference pattern, annotated</div>
+<pre><span class="cm">// PART 1 — PROPS: the "settings menu" for this component.</span>
+<span class="cm">// We extend the real HTML button so onClick, disabled, type… come free.</span>
+<span class="kw">interface</span> <span class="fn">ButtonProps</span> <span class="kw">extends</span> <span class="fn">ButtonHTMLAttributes</span>&lt;<span class="fn">HTMLButtonElement</span>&gt; {
+  variant?: <span class="st">"primary"</span> | <span class="st">"secondary"</span> | <span class="st">"danger"</span>;  <span class="cm">// which look</span>
+  children: <span class="fn">ReactNode</span>;                              <span class="cm">// the content inside</span>
+}
+
+<span class="cm">// PART 2 — STYLES: map each variant to TOKEN classes.</span>
+<span class="cm">// This is where the golden rule lives — zero real colors.</span>
+<span class="kw">const</span> variantClasses = {
+  primary:   <span class="st">"bg-primary text-on-primary hover:bg-primary-hover"</span>,
+  secondary: <span class="st">"bg-surface text-text border border-border"</span>,
+  danger:    <span class="st">"bg-danger text-on-primary"</span>,
+};
+
+<span class="cm">// PART 3 — THE COMPONENT: take the settings, produce the element.</span>
+<span class="kw">export function</span> <span class="fn">Button</span>({ variant = <span class="st">"primary"</span>, children, ...props }: <span class="fn">ButtonProps</span>) {
+  <span class="kw">return</span> (
+    &lt;<span class="fn">button</span> className={<span class="st">`px-4 py-2 rounded-lg ${variantClasses[variant]}`</span>} {...props}&gt;
+      {children}
+    &lt;/<span class="fn">button</span>&gt;
+  );
+}</pre></div>
+    <h4>How to think about each part</h4>
+    <p style="font-size:8.9pt;"><strong>Part 1 (props)</strong> declares what someone can customize — the variant, the content — plus everything a real HTML element already does. <strong>Part 2 (styles)</strong> is a lookup: "for this variant, use these token classes." Add or rename variants here. <strong>Part 3 (the component)</strong> is the function that glues settings + styles into the element on screen. When you build <em>your</em> component, you keep this three-part shape and change what's <em>inside</em> each part to fit your component.</p>
+  </div>
+
+  <div class="section">
+    <div class="filecard">
+      <div class="fc-head"><span class="fc-name">Card.stories.tsx</span><span class="fc-tag">File 2 · the demos</span></div>
+      <div class="fc-body">
+        <p class="fc-q">Why it exists</p>
+        <p style="font-size:8.9pt;">It doesn't create anything new — it <strong>shows</strong> the component from File 1 in Storybook, one state per "story." This file is what makes your component appear in the sidebar, and it's what satisfies "documented in Storybook."</p>
+      </div>
+    </div>
+    <div class="code-wrap"><div class="code-label">Card.stories.tsx — annotated</div>
+<pre><span class="cm">// meta = introduces the component to Storybook</span>
+<span class="kw">const</span> meta: <span class="fn">Meta</span>&lt;<span class="kw">typeof</span> <span class="fn">Button</span>&gt; = {
+  title: <span class="st">"Components/Button"</span>,   <span class="cm">// its place in the sidebar</span>
+  component: <span class="fn">Button</span>,
+  tags: [<span class="st">"autodocs"</span>],           <span class="cm">// auto-build a docs page</span>
+  args: { children: <span class="st">"Click me"</span> }, <span class="cm">// default for all stories</span>
+};
+<span class="kw">export default</span> meta;
+
+<span class="cm">// each export below = ONE story = one state shown in Storybook</span>
+<span class="kw">export const</span> Primary = {};
+<span class="kw">export const</span> Danger  = { args: { variant: <span class="st">"danger"</span> } };
+<span class="kw">export const</span> Disabled = { args: { disabled: <span class="kw">true</span> } };</pre></div>
+    <p style="font-size:8.9pt;">Write one story per state your component can be in. That's how reviewers (and you) see every variation at a glance.</p>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>5</span></div>
+</div>
+
+<!-- ══════════ PAGE 6 — FILE 3 + BLANK IDE + KEEP/CHANGE ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <div class="filecard">
+      <div class="fc-head"><span class="fc-name">index.ts</span><span class="fc-tag">File 3 · the export</span></div>
+      <div class="fc-body">
+        <p class="fc-q">What it solves</p>
+        <p style="font-size:8.9pt;">A tiny "front door." Without it, other files import from a long path (<code>components/Card/Card</code>). With it, they import cleanly from the folder (<code>components/Card</code>). One line does it:</p>
+      </div>
+    </div>
+    <div class="code-wrap"><div class="code-label">index.ts — the whole file</div>
+<pre><span class="kw">export</span> { <span class="fn">Button</span> } <span class="kw">from</span> <span class="st">"./Button"</span>;
+<span class="kw">export type</span> { <span class="fn">ButtonProps</span> } <span class="kw">from</span> <span class="st">"./Button"</span>;</pre></div>
+    <p style="font-size:8.9pt;"><strong>The summary to remember: build → display → export.</strong> <code>.tsx</code> builds it, <code>.stories.tsx</code> displays it, <code>index.ts</code> exports it. Every component, same three roles.</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">8</span> You open a blank IDE — now what?</h2>
+    <p class="lead">This is the moment that feels scary. Here's the truth that removes the fear: <strong>you never start from a blank file.</strong> You copy the Button folder and change it.</p>
+    <div class="stp"><div class="stp-n">1</div><div class="stp-b"><p>In VS Code, find <code>src/components/Button/</code>. Copy the whole folder, paste it, rename the copy to your component (e.g. <code>Card</code>).</p></div></div>
+    <div class="stp"><div class="stp-n">2</div><div class="stp-b"><p>Rename the 3 files: <code>Card.tsx</code>, <code>Card.stories.tsx</code>, <code>index.ts</code>. Inside each, replace <code>Button</code> with <code>Card</code>.</p></div></div>
+    <div class="stp"><div class="stp-n">3</div><div class="stp-b"><p>Save. Look at Storybook — is <strong>Card</strong> in the sidebar? Click it. If it renders, you've proven the workflow.</p></div></div>
+    <div class="stp"><div class="stp-n">4</div><div class="stp-b"><p><strong>Now</strong> build it for real — change what's inside the three parts to fit a card, using tokens only, and add a story per state.</p></div></div>
+    <div class="box tip">
+      <span class="lab">The question in your head right now</span>
+      <em>"The Button is written a certain way — do I copy that exact pattern, or write it my own way?"</em> &nbsp;→ <strong>Copy the pattern. Always.</strong> Same file structure, same three parts, same token approach. Consistency across all eight components IS the deliverable — that's literally what the ticket asks for. You change the <em>content</em>, never the <em>shape</em>.
+    </div>
+    <p style="text-align:center; font-size:9pt; color:#4338ca; font-weight:600; margin-top:2mm;">If any doubts come up while building — ping me anytime. 👍</p>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">9</span> Keep this / change this</h2>
+    <p>The clearest way to think about building your component — what stays identical to Button, and what you make your own:</p>
+    <div class="kc">
+      <div class="kc-col kc-keep">
+        <h4>✓ Keep identical</h4>
+        <ul>
+          <li>The <strong>3-file structure</strong> &amp; their names</li>
+          <li>The <strong>three-part shape</strong> of the .tsx (props → styles → component)</li>
+          <li><strong>Tokens for all colors</strong> — never hex</li>
+          <li>The <strong>stories format</strong> (meta + one export per state)</li>
+          <li>Typed props that <strong>extend the HTML element</strong></li>
+          <li>Exporting via <code>index.ts</code></li>
+        </ul>
+      </div>
+      <div class="kc-col kc-change">
+        <h4>✎ Change per component</h4>
+        <ul>
+          <li>The <strong>component name</strong> everywhere</li>
+          <li>The <strong>props</strong> — what YOUR component needs</li>
+          <li>The <strong>variants/styles</strong> in the lookup</li>
+          <li>The <strong>JSX</strong> it returns (a card's markup ≠ a button's)</li>
+          <li>The <strong>stories</strong> — your component's real states</li>
+          <li>The <code>title</code> in meta (e.g. <code>"Components/Card"</code>)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="box win">
+      <span class="lab">Your self-check before review</span>
+      Open your component and flip through all themes with 🎨 Theme. If anything doesn't recolor, you hardcoded a color — find it, swap it for a token. That's your built-in bug detector.
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide</span><span>6</span></div>
+</div>
+
+<!-- ══════════ PAGE 7 — SPLIT + DONE + CLOSE ══════════ -->
+<div class="wrap">
+  <div class="section">
+    <h2><span class="step-badge">10</span> Who builds what</h2>
+    <p>Start with your <strong>first</strong> component. When it's reviewed and merged, you get the second. One at a time keeps quality high.</p>
+    <table>
+      <tr><th>You</th><th>Build (in order)</th><th>Notes</th></tr>
+      <tr><td><strong>Mahesh</strong></td><td>Modal → Toast</td><td>The stateful ones (pop-ups, notifications). I'll pair with you on these.</td></tr>
+      <tr><td><strong>Aarnesh</strong></td><td>Input → Form fields</td><td>Form fields build on Input — one connected path.</td></tr>
+      <tr><td><strong>Bhuvana</strong></td><td>Card → Skeleton</td><td>Layout + tokens. Clean components to build confidence.</td></tr>
+      <tr><td>Together</td><td>Nav</td><td>We build this as a group — it holds the theme switcher.</td></tr>
+    </table>
+    <div class="box note">
+      <span class="lab">Already done for you</span>
+      I've built the foundation — the theme system, the six token themes, the Button reference, and the ThemeSwitcher. You're unblocked from minute one. Just copy the Button pattern.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">11</span> "Done" checklist</h2>
+    <p>Your component is finished when all of these are true. Check them before you ask for review.</p>
+    <ul class="check">
+      <li><strong>Only token classes for color</strong> — zero <code>#hex</code>, zero <code>bg-blue-500</code>.</li>
+      <li><strong>Has a stories file</strong> with a story for each state.</li>
+      <li><strong>Keyboard-friendly</strong> — you can Tab to it and see a focus ring.</li>
+      <li><strong>Props are typed</strong> — following how Button types its props.</li>
+      <li><strong>Exported</strong> from its <code>index.ts</code>.</li>
+      <li><strong>Recolors in every theme</strong> — verified with the 🎨 dropdown.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="step-badge">12</span> The rules that matter most</h2>
+    <div class="hero">
+      <div class="k">If you remember nothing else</div>
+      <div class="big">Copy the Button. Use tokens, never colors.</div>
+      <div class="sm">Get those two right and you cannot fail your component. And one human rule: <strong>stuck for 20 minutes? Ask.</strong> That's expected, not a weakness — it's the fastest way for all of us to move.</div>
+    </div>
+  </div>
+
+  <div class="foot"><span>US-5 · Developer Onboarding Guide · Frontend Team</span><span>7</span></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+/* ============================================================================
+   E-LEARNING COLOR THEMES  —  TEMPORARY PALETTE
+   ----------------------------------------------------------------------------
+   Provisional colors, in use until the designer's Figma tokens arrive. When
+   Figma tokens land, change the VALUES in this file only — the token NAMES
+   (--color-primary, --color-surface, ...) stay identical, so every component
+   updates automatically and nobody edits a single component.
+
+   RULES FOR THE TEAM:
+   - Never reference a raw hex from this file inside a component. Components use
+     token classes (bg-primary, text-text, ...) only.
+   - Need a color that isn't here? Add it to EVERY theme below, then use it.
+   - Switch themes by setting <html data-theme="scholar-indigo"> (etc.).
+
+   Default theme: scholar-indigo   ·   Dark option: midnight-study
+   ========================================================================= */
+
+/* ---- SCHOLAR INDIGO — default. Trustworthy, academic, easy on the eyes ---- */
+:root,
+[data-theme="scholar-indigo"] {
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-on-primary: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-hover: #f1f5f9;
+  --color-text: #0f172a;
+  --color-muted: #576378;
+  --color-border: #e2e8f0;
+  --color-success: #15803d;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-skeleton-base: #e2e8f0;
+  --color-skeleton-shine: #f1f5f9;
+}
+
+/* ---- TEAL FOCUS — fresh, modern, stands apart from the blue crowd -------- */
+[data-theme="teal-focus"] {
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-on-primary: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #f6fafb;
+  --color-surface-hover: #e0f2f1;
+  --color-text: #0c4a5a;
+  --color-muted: #4a6b72;
+  --color-border: #d5e6e8;
+  --color-success: #15803d;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-skeleton-base: #d5e6e8;
+  --color-skeleton-shine: #e0f2f1;
+}
+
+/* ---- WARM ACADEMY — friendly, inviting; blue base + amber accent -------- */
+[data-theme="warm-academy"] {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-on-primary: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #fbf9f6;
+  --color-surface-hover: #fef3e2;
+  --color-text: #1e3a5f;
+  --color-muted: #6d5836;
+  --color-border: #ece5da;
+  --color-success: #15803d;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-skeleton-base: #ece5da;
+  --color-skeleton-shine: #fef3e2;
+}
+
+/* ---- VIOLET SCHOLAR — creative, premium; good for skill/creative courses  */
+[data-theme="violet-scholar"] {
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-on-primary: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #faf8fc;
+  --color-surface-hover: #f3e8ff;
+  --color-text: #3b1f5e;
+  --color-muted: #6b5089;
+  --color-border: #ebe3f5;
+  --color-success: #15803d;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-skeleton-base: #ebe3f5;
+  --color-skeleton-shine: #f3e8ff;
+}
+
+/* ---- FOREST GROWTH — natural, steady; leans into the "growth" metaphor --- */
+[data-theme="forest-growth"] {
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-on-primary: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #f7faf8;
+  --color-surface-hover: #dcfce7;
+  --color-text: #14432a;
+  --color-muted: #4a6b54;
+  --color-border: #d8e8dd;
+  --color-success: #0f766e;
+  --color-danger: #dc2626;
+  --color-warning: #b45309;
+  --color-skeleton-base: #d8e8dd;
+  --color-skeleton-shine: #dcfce7;
+}
+
+/* ---- MIDNIGHT STUDY — dark theme; low eye-strain for night sessions ------ */
+[data-theme="midnight-study"] {
+  --color-primary: #818cf8;
+  --color-primary-hover: #a5b4fc;
+  --color-on-primary: #0f172a;
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-text: #f1f5f9;
+  --color-muted: #a3b0c2;
+  --color-border: #334155;
+  --color-success: #4ade80;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-skeleton-base: #334155;
+  --color-skeleton-shine: #475569;
+}

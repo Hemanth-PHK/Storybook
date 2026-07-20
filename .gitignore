@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# build outputs
+dist/
+build/
+storybook-static/
+
+# storybook
+*.log
+.cache/
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.backup

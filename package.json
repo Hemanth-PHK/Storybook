@@ -1,0 +1,12 @@
+{
+  "name": "edtech-ui-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "storybook": "npm run storybook --workspace=@edtech/ui"
+  }
+}
