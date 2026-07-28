@@ -7,6 +7,8 @@ export { ThemeProvider } from "./theme/ThemeProvider";
 export { useTheme } from "./theme/useTheme";
 export { THEMES, DEFAULT_THEME } from "./tokens/tokens";
 export type { ThemeId } from "./tokens/tokens";
+export * from "./components/Card";
+export * from "./components/Skeleton";
 
 // Components — Button is your reference (already built). ThemeSwitcher is foundation.
 export * from "./components/Button";
