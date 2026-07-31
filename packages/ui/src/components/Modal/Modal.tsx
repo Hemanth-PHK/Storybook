@@ -124,7 +124,7 @@ export function Modal({
             type="button"
             onClick={onClose}
             className={cn(
-              "rounded-md p-2",
+              "ml-auto rounded-md p-2",
               "text-muted transition-colors",
               "hover:bg-surface-hover hover:text-text",
               "focus-visible:outline-none",
