@@ -157,9 +157,19 @@ export const Large: Story = {
 /* ============================================================================
    Confirmation Dialog
 ============================================================================ */
-export const Confirmation: Story = {
+/* ============================================================================
+   Delete Confirmation
+   ----------------------------------------------------------------------------
+   Negative / destructive confirmation modal.
+
+   Used when the user is about to perform a destructive action
+   such as deleting an item.
+   ============================================================================ */
+
+export const DeleteConfirmation: Story = {
   args: {
     title: "Delete Confirmation",
+    size: "md",
     closeOnOverlay: false,
   },
 
@@ -177,6 +187,43 @@ export const Confirmation: Story = {
 
           <Button variant="danger">
             Delete
+          </Button>
+        </div>
+      </>
+    </InteractiveModal>
+  ),
+};
+
+
+/* ============================================================================
+   Submit Confirmation
+   ----------------------------------------------------------------------------
+   Positive confirmation modal.
+
+   Used when the user is about to submit or confirm information.
+   ============================================================================ */
+
+export const SubmitConfirmation: Story = {
+  args: {
+    title: "Submit Confirmation",
+    size: "md",
+    closeOnOverlay: false,
+  },
+
+  render: (args) => (
+    <InteractiveModal args={args}>
+      <>
+        <p className="mb-4">
+          Are you sure you want to submit this information?
+        </p>
+
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary">
+            Cancel
+          </Button>
+
+          <Button variant="primary">
+            Submit
           </Button>
         </div>
       </>
