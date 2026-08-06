@@ -3,25 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "./Card";
 import { Button } from "../Button";
 
-/* ============================================================================
-   Card.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   Every exported object below represents one visual state.
-
-   Storybook automatically creates interactive documentation.
-
-   Use this file to verify
-
-   • Different layouts
-   • Header
-   • Footer
-   • Theme switching
-   • Responsiveness
-   • Component behaviour
-
-   Each story represents a realistic use case.
-============================================================================ */
-
 const meta: Meta<typeof Card> = {
   title: "Components/Card",
   component: Card,
@@ -48,9 +29,9 @@ export default meta;
 
 type Story = StoryObj<typeof Card>;
 
-/* ============================================================================
+/* 
    Default
-============================================================================ */
+ */
 
 export const Default: Story = {
   render: (args) => (
@@ -63,9 +44,9 @@ export const Default: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Without Header
-============================================================================ */
+*/
 
 export const WithoutHeader: Story = {
   args: {
@@ -81,9 +62,9 @@ export const WithoutHeader: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    With Footer
-============================================================================ */
+*/
 
 export const WithFooter: Story = {
   args: {
@@ -103,9 +84,9 @@ export const WithFooter: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Without Shadow
-============================================================================ */
+ */
 
 export const WithoutShadow: Story = {
   args: {
@@ -121,9 +102,9 @@ export const WithoutShadow: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Without Padding
-============================================================================ */
+*/
 
 export const WithoutPadding: Story = {
   args: {
@@ -139,9 +120,9 @@ export const WithoutPadding: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Dashboard Card
-============================================================================ */
+ */
 
 export const DashboardCard: Story = {
   args: {

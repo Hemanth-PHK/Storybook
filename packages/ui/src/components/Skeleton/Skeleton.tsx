@@ -2,33 +2,6 @@ import { type HTMLAttributes } from "react";
 
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Skeleton — THE REFERENCE COMPONENT
-   ----------------------------------------------------------------------------
-   A Skeleton provides a visual placeholder while content is loading.
-
-   This component follows the same architecture as Modal.
-
-   1. TYPED PROPS
-      - Extends native HTML <div> attributes.
-      - Supports className, id, style, aria-*, data-* and more.
-
-   2. DESIGN TOKENS
-      - Uses design token classes only.
-      - No raw colors are used.
-
-   3. REUSABILITY
-      - Supports multiple variants.
-      - Custom width and height.
-      - Optional loading animation.
-
-   4. ACCESSIBILITY
-      - Hidden from screen readers.
-      - Used only as a visual loading indicator.
-
-   5. CUSTOMIZATION
-      - Supports text, avatar and rectangular placeholders.
-============================================================================ */
 
 type Variant = "text" | "avatar" | "rect";
 

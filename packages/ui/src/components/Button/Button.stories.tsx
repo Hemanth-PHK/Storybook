@@ -1,63 +1,199 @@
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { Button } from "./Button";
 
 /* ============================================================================
    Button.stories — THE REFERENCE STORY
    ----------------------------------------------------------------------------
-   A "story" is one rendered example of a component. Storybook collects them
-   into an interactive page. Copy this file's shape for every component.
+   Every exported object below represents one visual state.
 
-   - `meta` describes the component + which props are interactive controls.
-   - Each export is one story (a preset state).
-   - Use the theme toolbar in Storybook to switch themes and WATCH these
-     recolor with zero code change. If a component doesn't recolor, it has a
-     hardcoded color — that's a bug.
-   ========================================================================= */
+   Storybook automatically creates interactive documentation.
+
+   Use this file to verify
+
+   • Different variants
+   • Different sizes
+   • Loading state
+   • Disabled state
+   • Theme switching
+   • Accessibility
+
+   Each story represents a realistic use case.
+============================================================================ */
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
-  tags: ["autodocs"], // generates a docs page automatically
+  tags: ["autodocs"],
+
   args: {
-    children: "Click me",
+    children: "Click Me",
     variant: "primary",
     size: "md",
+    loading: false,
+    disabled: false,
   },
+
   argTypes: {
     variant: {
       control: "select",
-      options: ["primary", "secondary", "ghost", "danger"],
+      options: [
+        "primary",
+        "secondary",
+        "outline",
+        "ghost",
+        "danger",
+      ],
     },
-    size: { control: "select", options: ["sm", "md", "lg"] },
-    isLoading: { control: "boolean" },
-    disabled: { control: "boolean" },
+
+    size: {
+      control: "select",
+      options: ["sm", "md", "lg"],
+    },
+
+    loading: {
+      control: "boolean",
+    },
+
+    disabled: {
+      control: "boolean",
+    },
   },
 };
+
 export default meta;
 
 type Story = StoryObj<typeof Button>;
 
-/* One story per meaningful state. */
+/* ============================================================================
+   Primary
+============================================================================ */
+
 export const Primary: Story = {};
 
-export const Secondary: Story = { args: { variant: "secondary" } };
+/* ============================================================================
+   Secondary
+============================================================================ */
 
-export const Ghost: Story = { args: { variant: "ghost" } };
+export const Secondary: Story = {
+  args: {
+    variant: "secondary",
+  },
+};
 
-export const Danger: Story = { args: { variant: "danger", children: "Delete" } };
+/* ============================================================================
+   Outline
+============================================================================ */
 
-export const Loading: Story = { args: { isLoading: true, children: "Saving" } };
+export const Outline: Story = {
+  args: {
+    variant: "outline",
+  },
+};
 
-export const Disabled: Story = { args: { disabled: true } };
+/* ============================================================================
+   Ghost
+============================================================================ */
 
-/* A story showing all variants together — handy for visual review. */
+export const Ghost: Story = {
+  args: {
+    variant: "ghost",
+  },
+};
+
+/* ============================================================================
+   Danger
+============================================================================ */
+
+export const Danger: Story = {
+  args: {
+    variant: "danger",
+    children: "Delete",
+  },
+};
+
+/* ============================================================================
+   Small
+============================================================================ */
+
+export const Small: Story = {
+  args: {
+    size: "sm",
+  },
+};
+
+/* ============================================================================
+   Medium
+============================================================================ */
+
+export const Medium: Story = {
+  args: {
+    size: "md",
+  },
+};
+
+/* ============================================================================
+   Large
+============================================================================ */
+
+export const Large: Story = {
+  args: {
+    size: "lg",
+  },
+};
+
+/* ============================================================================
+   Loading
+============================================================================ */
+
+export const Loading: Story = {
+  args: {
+    loading: true,
+  },
+};
+
+/* ============================================================================
+   Disabled
+============================================================================ */
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+  },
+};
+
+/* ============================================================================
+   All Variants
+============================================================================ */
+
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-4">
       <Button variant="primary">Primary</Button>
+
       <Button variant="secondary">Secondary</Button>
+
+      <Button variant="outline">Outline</Button>
+
       <Button variant="ghost">Ghost</Button>
+
       <Button variant="danger">Danger</Button>
+    </div>
+  ),
+};
+
+/* ============================================================================
+   All Sizes
+============================================================================ */
+
+export const AllSizes: Story = {
+  render: () => (
+    <div className="flex items-center gap-4">
+      <Button size="sm">Small</Button>
+
+      <Button size="md">Medium</Button>
+
+      <Button size="lg">Large</Button>
     </div>
   ),
 };
