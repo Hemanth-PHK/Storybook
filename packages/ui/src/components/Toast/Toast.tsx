@@ -1,54 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Toast — REUSABLE NOTIFICATION COMPONENT
-   ----------------------------------------------------------------------------
-   Toast displays short feedback messages to the user.
 
-   Examples:
-   - Success: "Changes saved successfully"
-   - Error: "Something went wrong"
-   - Warning: "Please review your information"
-   - Info: "A new update is available"
-
-   COMPONENT RULES:
-
-   1. TYPED PROPS
-      - Extends native HTML <div> attributes.
-      - Consumers automatically receive className, id, style, aria-*, etc.
-
-   2. VARIANTS
-      - success
-      - error
-      - warning
-      - info
-
-   3. DESIGN TOKENS
-      - Uses the project's theme token classes.
-      - No hardcoded hex colors.
-      - Automatically adapts when the application theme changes.
-
-   4. ACCESSIBILITY
-      - Error notifications use role="alert".
-      - Other notifications use role="status".
-      - Decorative icons are hidden from screen readers.
-      - Dismiss button has an accessible label.
-
-   5. DISMISSIBLE
-      - Toast can optionally display a close button.
-      - onDismiss notifies the parent that the user wants to dismiss it.
-
-   6. CONTROLLED BEHAVIOR
-      - Toast does NOT manage its own visibility.
-      - The parent decides whether the Toast is rendered.
-      - This keeps the component reusable.
-   ========================================================================= */
-
-
-/* ============================================================================
-   Types
-   ============================================================================ */
 
 type ToastVariant = "success" | "error" | "warning" | "info";
 
@@ -58,41 +11,12 @@ type ToastVariant = "success" | "error" | "warning" | "info";
    ============================================================================ */
 
 export interface ToastProps extends HTMLAttributes<HTMLDivElement> {
-  /**
-   * Visual and semantic type of notification.
-   */
   variant?: ToastVariant;
-
-  /**
-   * Optional heading displayed above the message.
-   */
   title?: string;
-
-  /**
-   * Main Toast message/content.
-   */
   children: ReactNode;
-
-  /**
-   * Determines whether the dismiss button is displayed.
-   */
   dismissible?: boolean;
-
-  /**
-   * Called when the user clicks the dismiss button.
-   *
-   * The parent component should normally use this callback
-   * to remove the Toast from the UI.
-   */
   onDismiss?: () => void;
 }
-
-
-/* ============================================================================
-   Variant Styles
-   ----------------------------------------------------------------------------
-   Only design-system token classes are used here.
-   ============================================================================ */
 
 const variantClasses: Record<ToastVariant, string> = {
   success: "border-success",
@@ -102,10 +26,6 @@ const variantClasses: Record<ToastVariant, string> = {
 };
 
 
-/* ============================================================================
-   Icon Styles
-   ============================================================================ */
-
 const iconClasses: Record<ToastVariant, string> = {
   success: "text-success",
   error: "text-danger",
@@ -113,15 +33,6 @@ const iconClasses: Record<ToastVariant, string> = {
   info: "text-primary",
 };
 
-
-/* ============================================================================
-   Variant Icons
-   ----------------------------------------------------------------------------
-   These icons are decorative.
-
-   aria-hidden is applied when they are rendered so screen readers don't
-   announce them unnecessarily.
-   ============================================================================ */
 
 const icons: Record<ToastVariant, ReactNode> = {
   success: "✓",
@@ -144,36 +55,17 @@ export function Toast({
   className,
   ...props
 }: ToastProps) {
-  /*
-   * Errors should be announced more urgently by assistive technologies.
-   *
-   * Other Toast types use role="status".
-   */
+
   const role = variant === "error" ? "alert" : "status";
 
   return (
     <div
       role={role}
       className={cn(
-        /*
-         * Layout
-         */
         "flex w-full max-w-sm items-start gap-3",
-
-        /*
-         * Appearance
-         */
         "rounded-lg border bg-surface p-4",
         "text-text shadow-lg",
-
-        /*
-         * Variant border
-         */
         variantClasses[variant],
-
-        /*
-         * Allow consumers to extend the component.
-         */
         className,
       )}
       {...props}
@@ -217,18 +109,6 @@ export function Toast({
         </div>
 
       </div>
-
-
-      {/* =====================================================================
-          Dismiss Button
-
-          Important:
-          Clicking this button calls onDismiss().
-
-          The parent component decides what happens next.
-          Usually it changes visibility state and removes the Toast.
-          ================================================================== */}
-
       {dismissible && (
         <button
           type="button"

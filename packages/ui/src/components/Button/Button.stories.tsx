@@ -1,18 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./Button";
 
-/* ============================================================================
-   Button.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   A "story" is one rendered example of a component. Storybook collects them
-   into an interactive page. Copy this file's shape for every component.
 
-   - `meta` describes the component + which props are interactive controls.
-   - Each export is one story (a preset state).
-   - Use the theme toolbar in Storybook to switch themes and WATCH these
-     recolor with zero code change. If a component doesn't recolor, it has a
-     hardcoded color — that's a bug.
-   ========================================================================= */
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",

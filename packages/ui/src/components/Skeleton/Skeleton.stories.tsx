@@ -3,23 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Skeleton } from "./Skeleton";
 import { Card } from "../Card";
 
-/* ============================================================================
-   Skeleton.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   Every exported object below represents one visual state.
-
-   Storybook automatically creates interactive documentation.
-
-   Use this file to verify
-
-   • Different variants
-   • Different sizes
-   • Loading layouts
-   • Theme switching
-   • Responsiveness
-
-   Each story represents a realistic loading state.
-============================================================================ */
 
 const meta: Meta<typeof Skeleton> = {
   title: "Components/Skeleton",

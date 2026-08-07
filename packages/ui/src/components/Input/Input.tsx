@@ -1,6 +1,7 @@
 import type { InputHTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 
+<<<<<<< HEAD
 /* ============================================================================
    Input — REUSABLE COMPONENT
    ----------------------------------------------------------------------------
@@ -9,6 +10,8 @@ import { cn } from "../../utils/cn";
    3. Accessible focus styles
    4. Supports validation state
 ============================================================================ */
+=======
+>>>>>>> 88ee94bdd4e56167f6c5a1ecd5dc0b41f44a3571
 
 export interface InputProps
   extends InputHTMLAttributes<HTMLInputElement> {

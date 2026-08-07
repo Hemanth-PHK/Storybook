@@ -3,24 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "./Card";
 import { Button } from "../Button";
 
-/* ============================================================================
-   Card.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   Every exported object below represents one visual state.
 
-   Storybook automatically creates interactive documentation.
-
-   Use this file to verify
-
-   • Different layouts
-   • Header
-   • Footer
-   • Theme switching
-   • Responsiveness
-   • Component behaviour
-
-   Each story represents a realistic use case.
-============================================================================ */
 
 const meta: Meta<typeof Card> = {
   title: "Components/Card",

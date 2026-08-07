@@ -1,16 +1,7 @@
 import type { ReactNode } from "react";
 import { cloneElement, isValidElement } from "react";
 
-/* ============================================================================
-   FormField — REUSABLE COMPONENT
-   ----------------------------------------------------------------------------
-   Wraps form controls like Input.
-   1. Label
-   2. Required indicator
-   3. Helper text
-   4. Error message
-   5. Accessible label/input association
-============================================================================ */
+
 
 export interface FormFieldProps {
   id?: string;

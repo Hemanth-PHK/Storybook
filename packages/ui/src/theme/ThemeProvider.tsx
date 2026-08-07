@@ -7,17 +7,6 @@ import {
 } from "react";
 import { DEFAULT_THEME, type ThemeId } from "../tokens/tokens";
 
-/* ============================================================================
-   ThemeProvider
-   ----------------------------------------------------------------------------
-   The single owner of "which theme is active". It does three jobs:
-     1. Holds the current theme in React state.
-     2. Writes it to <html data-theme="..."> so CSS variables switch.
-     3. Persists the choice to localStorage so it survives a refresh.
-
-   Wrap your whole app in this once. Components below can then read/change the
-   theme via the useTheme() hook.
-   ========================================================================= */
 
 const STORAGE_KEY = "edtech-theme";
 

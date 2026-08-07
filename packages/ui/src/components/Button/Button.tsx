@@ -1,19 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Button — THE REFERENCE COMPONENT
-   ----------------------------------------------------------------------------
-   Every other component copies this shape. Study it:
 
-   1. TYPED PROPS: extend the real HTML element's props so consumers get
-      onClick, disabled, type, aria-*, etc. for free.
-   2. VARIANTS: a lookup object maps a `variant` prop to token-based classes.
-   3. NO RAW COLORS: every color is a token class (bg-primary, text-text...).
-      There is not a single hex or bg-blue-500 anywhere. THAT is what lets the
-      theme switch recolor this button automatically.
-   4. STATES: hover, disabled, and focus-visible are all handled with tokens.
-   ========================================================================= */
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
