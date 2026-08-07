@@ -7,34 +7,17 @@ import {
 import { cn } from "../../utils/cn";
 
 /* ============================================================================
-   Modal — THE REFERENCE COMPONENT
+   Modal — REUSABLE DIALOG COMPONENT
    ----------------------------------------------------------------------------
    A Modal (Dialog) displays important content above the current page.
 
-   This component follows the same architecture as Button.
-
-   1. TYPED PROPS
-      - Extends native HTML <div> attributes.
-      - Consumers automatically receive className, id, style,
-        aria-*, data-* and other standard HTML props.
-
-   2. CONTROLLED COMPONENT
-      - Visibility is controlled by the parent.
-      - The component never owns its own open state.
-
-   3. DESIGN TOKENS
-      - Uses design token classes only.
-      - No raw colors are used inside the component.
-
-   4. REUSABILITY
-      - Works for confirmation dialogs, forms,
-        edit screens and custom content.
-
-   5. ACCESSIBILITY
-      - Supports keyboard users.
-      - Supports Escape key.
-      - Supports overlay click.
-      - Uses role="dialog" and aria-modal.
+   Features
+   • Controlled component
+   • Keyboard accessible
+   • Overlay click support
+   • Escape key support
+   • Design token based styling
+   • Reusable for forms, confirmations and dialogs
 ============================================================================ */
 
 type Size = "sm" | "md" | "lg";
@@ -64,8 +47,7 @@ export function Modal({
   className,
   ...props
 }: ModalProps) {
-
-  /* Close the modal when Escape is pressed. */
+  /* Close modal using Escape key */
   useEffect(() => {
     if (!open) return;
 
@@ -82,10 +64,8 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  /* Don't render anything while closed. */
-  if (!open) {
-    return null;
-  }
+  /* Don't render when closed */
+  if (!open) return null;
 
   return (
     <div
@@ -98,9 +78,8 @@ export function Modal({
     >
       <div
         className={cn(
-          "w-full rounded-lg border border-border",
-          "bg-surface text-text shadow-xl",
-          "overflow-hidden",
+          "w-full overflow-hidden rounded-xl shadow-2xl",
+          "border border-border",
           sizeClasses[size],
           className,
         )}
@@ -110,26 +89,39 @@ export function Modal({
         onClick={(event) => event.stopPropagation()}
         {...props}
       >
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        {/* ==========================================================
+            HEADER
+        ========================================================== */}
+
+        <div
+          className={cn(
+            "flex items-center",
+            "bg-primary text-primary-foreground",
+            "px-6 py-5",
+          )}
+        >
           {title && (
             <h2
               id="modal-title"
-              className="text-lg font-semibold"
+              className="text-xl font-semibold"
             >
               {title}
             </h2>
           )}
 
+          {/* Push close button to the right */}
           <button
             type="button"
             onClick={onClose}
             className={cn(
               "ml-auto rounded-md p-2",
-              "text-muted transition-colors",
-              "hover:bg-surface-hover hover:text-text",
+              "transition-colors",
+
+              "hover:bg-white/20",
+
               "focus-visible:outline-none",
               "focus-visible:ring-2",
-              "focus-visible:ring-primary",
+              "focus-visible:ring-white",
             )}
             aria-label="Close Modal"
           >
@@ -137,7 +129,16 @@ export function Modal({
           </button>
         </div>
 
-        <div className="px-6 py-5">
+        {/* ==========================================================
+            BODY
+        ========================================================== */}
+
+        <div
+          className={cn(
+            "bg-surface text-text",
+            "px-6 py-8",
+          )}
+        >
           {children}
         </div>
       </div>
