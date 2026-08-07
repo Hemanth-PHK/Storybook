@@ -20,11 +20,11 @@ export function Nav({ brand, links = [], actions }: NavProps) {
           {links.map((l) => (
             <li key={l.href}>
               <a href={l.href} className={cn(
-                "rounded-lg px-3 py-1.5 text-sm transition-colors",
-                l.active
-                  ? "bg-surface-hover text-text font-medium"
-                  : "text-muted hover:bg-surface-hover hover:text-text",
-              )}>{l.label}</a>
+                  "rounded-lg px-3 py-1.5 text-sm transition-all duration-200 ease-in-out active:scale-95",
+                  l.active
+                    ? "bg-primary text-on-primary font-semibold shadow-sm"
+                    : "text-muted hover:bg-surface-hover hover:text-text",
+                )}>{l.label}</a>
             </li>
           ))}
         </ul>
