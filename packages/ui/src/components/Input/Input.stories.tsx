@@ -2,8 +2,6 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "./Input";
 
-
-
 interface ValidationWrapperProps {
   label: string;
   type?: "text" | "email" | "password";
@@ -23,12 +21,35 @@ function ValidationWrapper({
   const [error, setError] = useState("");
 
   const emailRegex =
-  /^[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+)@(?:[A-Za-z0-9](?:[A-Za-z0-9-][A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
+    /^[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
+  const nameRegex = /^[A-Za-z\s'-]+$/;
+
   const validate = (input: string) => {
+    // Name validation (text fields)
+    if (type === "text") {
+      if (required && !input.trim()) {
+        setError("Name is required");
+        return;
+      }
+      if (input && input.trim().length < 2) {
+        setError("Name must be at least 2 characters");
+        return;
+      }
+      if (input && input.trim().length > 50) {
+        setError("Name must be under 50 characters");
+        return;
+      }
+      if (input && !nameRegex.test(input)) {
+        setError("Name can only contain letters, spaces, hyphens, and apostrophes");
+        return;
+      }
+    }
+
+    // Required check for non-text fields
     if (required && !input.trim()) {
       setError(`${label} is required`);
       return;
@@ -102,14 +123,13 @@ const meta: Meta<typeof Input> = {
 
 export default meta;
 
-
-
 type Story = StoryObj<typeof Input>;
 
 export const Default: Story = {
   render: () => (
     <ValidationWrapper
       label="Name"
+      required
       placeholder="Enter your name"
     />
   ),
@@ -162,6 +182,7 @@ export const AllStates: Story = {
     <div className="flex flex-col gap-6">
       <ValidationWrapper
         label="Name"
+        required
         placeholder="Enter your name"
       />
 

@@ -21,22 +21,47 @@ function ValidationWrapper({
   const [error, setError] = useState("");
 
   const emailRegex =
-  /^[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+)@(?:[A-Za-z0-9](?:[A-Za-z0-9-][A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
-  
+    /^[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
+
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
+  const nameRegex = /^[A-Za-z\s'-]+$/;
+
   const validate = (input: string) => {
+    // Name validation (text fields)
+    if (type === "text") {
+      if (required && !input.trim()) {
+        setError("Name is required");
+        return;
+      }
+      if (input && input.trim().length < 2) {
+        setError("Name must be at least 2 characters");
+        return;
+      }
+      if (input && input.trim().length > 50) {
+        setError("Name must be under 50 characters");
+        return;
+      }
+      if (input && !nameRegex.test(input)) {
+        setError("Name can only contain letters, spaces, hyphens, and apostrophes");
+        return;
+      }
+    }
+
+    // Required check for non-text fields
     if (required && !input.trim()) {
       setError(`${label} is required`);
       return;
     }
 
+    // Email validation
     if (type === "email" && input && !emailRegex.test(input)) {
       setError("Please enter a valid email address.");
       return;
     }
 
+    // Password validation
     if (type === "password" && input && !passwordRegex.test(input)) {
       setError(
         "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
@@ -88,6 +113,7 @@ export const Default: Story = {
   render: () => (
     <ValidationWrapper
       label="Name"
+      required
       placeholder="Enter your name"
     />
   ),
@@ -131,6 +157,7 @@ export const AllStates: Story = {
     <div className="flex w-96 flex-col gap-6">
       <ValidationWrapper
         label="Name"
+        required
         placeholder="Enter your name"
       />
 
