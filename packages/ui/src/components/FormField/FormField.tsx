@@ -41,7 +41,7 @@ export function FormField({
         >
           {label}
           {required && (
-            <span className="ml-1 text-destructive">*</span>
+            <span className="ml-1 text-danger">*</span>
           )}
         </label>
       )}
@@ -51,7 +51,7 @@ export function FormField({
       {error ? (
         <p
           id={errorId}
-          className="text-sm text-destructive"
+          className="text-sm text-danger"
         >
           {error}
         </p>
