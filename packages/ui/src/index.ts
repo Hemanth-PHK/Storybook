@@ -14,6 +14,8 @@ export * from "./components/Skeleton";
 export * from "./components/Button";
 export * from "./components/ThemeSwitcher";
  export * from "./components/Nav";
+export * from "./components/PageTransition";
+export * from "./components/RouteLoadingIndicator";
 
 /* ============================================================================
    YOUR COMPONENTS TO BUILD

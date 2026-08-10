@@ -46,6 +46,16 @@ export default {
         "skeleton-base": "var(--color-skeleton-base)",
         "skeleton-shine": "var(--color-skeleton-shine)",
       },
+      keyframes: {
+        "loading-bar": {
+          "0%": { transform: "translateX(-100%)" },
+          "50%": { transform: "translateX(10%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+      animation: {
+        "loading-bar": "loading-bar 1.1s ease-in-out infinite",
+      },
     },
   },
   plugins: [],
