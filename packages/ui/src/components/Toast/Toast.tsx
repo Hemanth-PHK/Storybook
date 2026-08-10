@@ -1,32 +1,16 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Toast — REUSABLE NOTIFICATION COMPONENT
-   ============================================================================ */
 
 type ToastVariant = "success" | "error" | "warning" | "info";
 
 export interface ToastProps extends HTMLAttributes<HTMLDivElement> {
-  /**
-   * Visual and semantic type of notification.
-   */
   variant?: ToastVariant;
-
-  /**
-   * Optional heading displayed above the message.
-   */
   title?: string;
-
-  /**
-   * Main Toast message/content.
-   */
   children: ReactNode;
+  dismissible?: boolean;
+  onDismiss?: () => void;
 }
-
-/* ============================================================================
-   Variant Styles
-   ============================================================================ */
 
 const variantClasses: Record<ToastVariant, string> = {
   success: "border-success",
@@ -35,9 +19,6 @@ const variantClasses: Record<ToastVariant, string> = {
   info: "border-primary",
 };
 
-/* ============================================================================
-   Icon Styles
-   ============================================================================ */
 
 const iconClasses: Record<ToastVariant, string> = {
   success: "text-success border-success",
@@ -46,9 +27,6 @@ const iconClasses: Record<ToastVariant, string> = {
   info: "text-primary border-primary",
 };
 
-/* ============================================================================
-   Variant Icons
-   ============================================================================ */
 
 const icons: Record<ToastVariant, ReactNode> = {
   success: "✓",
@@ -66,39 +44,20 @@ export function Toast({
   title,
   children,
   className,
+  dismissible = false,
+  onDismiss,
   ...props
 }: ToastProps) {
-  /*
-   * Error notifications are more urgent,
-   * so they use role="alert".
-   *
-   * Other Toast variants use role="status".
-   */
   const role = variant === "error" ? "alert" : "status";
 
   return (
     <div
       role={role}
       className={cn(
-        /*
-         * Layout
-         */
-        "flex w-[520px] max-w-[90vw] items-start gap-5",
-
-        /*
-         * Appearance
-         */
-        "rounded-xl border-2 bg-surface px-6 py-5",
+        "flex w-full max-w-sm items-start gap-3",
+        "rounded-lg border bg-surface p-4",
         "text-text shadow-lg",
-
-        /*
-         * Variant border
-         */
         variantClasses[variant],
-
-        /*
-         * Consumer classes
-         */
         className,
       )}
       {...props}
@@ -140,6 +99,31 @@ export function Toast({
         </div>
 
       </div>
+      {dismissible && (
+        <button
+          type="button"
+          onClick={() => {
+            onDismiss?.();
+          }}
+          className={cn(
+            "shrink-0 rounded-md p-1",
+            "text-muted",
+
+            "transition-colors",
+            "hover:bg-surface-hover hover:text-text",
+
+            "focus-visible:outline-none",
+            "focus-visible:ring-2",
+            "focus-visible:ring-primary",
+          )}
+          aria-label="Dismiss notification"
+        >
+          <span aria-hidden="true">
+            ×
+          </span>
+        </button>
+      )}
+
     </div>
   );
 }

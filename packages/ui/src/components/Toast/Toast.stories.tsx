@@ -2,22 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Toast } from "./Toast";
 
-/* ============================================================================
-   Toast Stories
-   ----------------------------------------------------------------------------
-   Stories used to test:
 
-   1. Default Toast
-   2. Success Toast
-   3. Error Toast
-   4. Warning Toast
-   5. Info Toast
-   6. Success Toast Without Title
-   7. Error Toast Without Title
-   8. Success Toast With Long Content
-   9. Warning Toast With Long Content
-   10. All Toast Variants Together
-   ============================================================================ */
 
 const meta = {
   title: "Components/Toast",

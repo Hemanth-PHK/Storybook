@@ -5,34 +5,7 @@ import {
 
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Card — THE REFERENCE COMPONENT
-   ----------------------------------------------------------------------------
-   A Card is a flexible container used to group related content together.
 
-   This component follows the same architecture as Modal.
-
-   1. TYPED PROPS
-      - Extends native HTML <div> attributes.
-      - Supports className, id, style, aria-*, data-* and more.
-
-   2. DESIGN TOKENS
-      - Uses design token classes only.
-      - No raw colors are used.
-
-   3. REUSABILITY
-      - Supports optional header, footer and custom content.
-      - Can be used for dashboards, forms, statistics,
-        product cards and more.
-
-   4. ACCESSIBILITY
-      - Semantic HTML.
-      - Fully keyboard accessible.
-
-   5. CUSTOMIZATION
-      - Supports optional padding.
-      - Supports optional shadow.
-============================================================================ */
 
 export interface CardProps
   extends HTMLAttributes<HTMLDivElement> {

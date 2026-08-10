@@ -6,19 +6,6 @@ import {
 
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Modal — REUSABLE DIALOG COMPONENT
-   ----------------------------------------------------------------------------
-   A Modal (Dialog) displays important content above the current page.
-
-   Features
-   • Controlled component
-   • Keyboard accessible
-   • Overlay click support
-   • Escape key support
-   • Design token based styling
-   • Reusable for forms, confirmations and dialogs
-============================================================================ */
 
 type Size = "sm" | "md" | "lg";
 

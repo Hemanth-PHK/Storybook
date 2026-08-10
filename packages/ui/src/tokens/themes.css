@@ -1,19 +1,4 @@
-/* ============================================================================
-   E-LEARNING COLOR THEMES  —  TEMPORARY PALETTE
-   ----------------------------------------------------------------------------
-   Provisional colors, in use until the designer's Figma tokens arrive. When
-   Figma tokens land, change the VALUES in this file only — the token NAMES
-   (--color-primary, --color-surface, ...) stay identical, so every component
-   updates automatically and nobody edits a single component.
 
-   RULES FOR THE TEAM:
-   - Never reference a raw hex from this file inside a component. Components use
-     token classes (bg-primary, text-text, ...) only.
-   - Need a color that isn't here? Add it to EVERY theme below, then use it.
-   - Switch themes by setting <html data-theme="scholar-indigo"> (etc.).
-
-   Default theme: scholar-indigo   ·   Dark option: midnight-study
-   ========================================================================= */
 
 /* ---- SCHOLAR INDIGO — default. Trustworthy, academic, easy on the eyes ---- */
 :root,

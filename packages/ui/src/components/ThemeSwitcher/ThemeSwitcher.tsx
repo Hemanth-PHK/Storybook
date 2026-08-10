@@ -2,18 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../../theme/useTheme";
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   ThemeSwitcher — the feature from the ticket
-   ----------------------------------------------------------------------------
-   The palette icon that lives in the top-right corner. Click it → a dropdown
-   of themes appears → pick one → the WHOLE site recolors.
-
-   It doesn't contain any color logic itself. It just calls setTheme(id) from
-   useTheme(), which flips <html data-theme>. Everything else is CSS cascade.
-
-   Behaviors handled: open/close, click-outside-to-close, Escape-to-close,
-   active-theme checkmark, keyboard focusable options.
-   ========================================================================= */
 
 function PaletteIcon() {
   return (
