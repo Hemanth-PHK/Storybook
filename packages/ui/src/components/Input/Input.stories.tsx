@@ -29,7 +29,6 @@ function ValidationWrapper({
   const nameRegex = /^[A-Za-z\s'-]+$/;
 
   const validate = (input: string) => {
-    // Name validation (text fields)
     if (type === "text") {
       if (required && !input.trim()) {
         setError("Name is required");
@@ -49,26 +48,21 @@ function ValidationWrapper({
       }
     }
 
-    // Required check for non-text fields
     if (required && !input.trim()) {
       setError(`${label} is required`);
       return;
     }
 
-    if (type === "email" && input) {
-      if (!emailRegex.test(input)) {
-        setError("Please enter a valid email address.");
-        return;
-      }
+    if (type === "email" && input && !emailRegex.test(input)) {
+      setError("Please enter a valid email address.");
+      return;
     }
 
-    if (type === "password" && input) {
-      if (!passwordRegex.test(input)) {
-        setError(
-          "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
-        );
-        return;
-      }
+    if (type === "password" && input && !passwordRegex.test(input)) {
+      setError(
+        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
+      );
+      return;
     }
 
     setError("");
@@ -78,7 +72,6 @@ function ValidationWrapper({
     <div className="flex w-96 flex-col gap-2">
       <label className="font-medium">
         {label}
-
         {required && (
           <span className="ml-1 text-danger">*</span>
         )}
@@ -91,8 +84,15 @@ function ValidationWrapper({
         disabled={disabled}
         invalid={!!error}
         onChange={(e) => {
-          setValue(e.target.value);
-          validate(e.target.value);
+          let newValue = e.target.value;
+
+          // For name (text) fields, block anything that isn't a letter, space, hyphen, or apostrophe
+          if (type === "text") {
+            newValue = newValue.replace(/[^A-Za-z\s'-]/g, "");
+          }
+
+          setValue(newValue);
+          validate(newValue);
         }}
         onBlur={(e) => validate(e.target.value)}
       />
@@ -185,27 +185,23 @@ export const AllStates: Story = {
         required
         placeholder="Enter your name"
       />
-
       <ValidationWrapper
         label="Email"
         type="email"
         required
         placeholder="Enter your email"
       />
-
       <ValidationWrapper
         label="Password"
         type="password"
         required
         placeholder="Enter your password"
       />
-
       <ValidationWrapper
         label="Username"
         required
         placeholder="Enter username"
       />
-
       <ValidationWrapper
         label="Disabled"
         disabled
