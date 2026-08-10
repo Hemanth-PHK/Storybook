@@ -2,13 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
 
-
 type ToastVariant = "success" | "error" | "warning" | "info";
-
-
-/* ============================================================================
-   Props
-   ============================================================================ */
 
 export interface ToastProps extends HTMLAttributes<HTMLDivElement> {
   variant?: ToastVariant;
@@ -27,10 +21,10 @@ const variantClasses: Record<ToastVariant, string> = {
 
 
 const iconClasses: Record<ToastVariant, string> = {
-  success: "text-success",
-  error: "text-danger",
-  warning: "text-warning",
-  info: "text-primary",
+  success: "text-success border-success",
+  error: "text-danger border-danger",
+  warning: "text-warning border-warning",
+  info: "text-primary border-primary",
 };
 
 
@@ -41,7 +35,6 @@ const icons: Record<ToastVariant, ReactNode> = {
   info: "i",
 };
 
-
 /* ============================================================================
    Toast Component
    ============================================================================ */
@@ -50,12 +43,11 @@ export function Toast({
   variant = "info",
   title,
   children,
-  dismissible = true,
-  onDismiss,
   className,
+  dismissible = false,
+  onDismiss,
   ...props
 }: ToastProps) {
-
   const role = variant === "error" ? "alert" : "status";
 
   return (
@@ -70,22 +62,21 @@ export function Toast({
       )}
       {...props}
     >
-
       {/* =====================================================================
           Status Icon
           ================================================================== */}
 
       <span
         className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center",
-          "rounded-full font-semibold",
+          "flex h-10 w-10 shrink-0 items-center justify-center",
+          "rounded-full border-2",
+          "text-xl font-bold leading-none",
           iconClasses[variant],
         )}
         aria-hidden="true"
       >
         {icons[variant]}
       </span>
-
 
       {/* =====================================================================
           Toast Content
@@ -96,15 +87,14 @@ export function Toast({
         {/* Optional Title */}
 
         {title && (
-          <div className="mb-1 font-medium text-text">
+          <div className="mb-2 text-lg font-semibold text-text">
             {title}
           </div>
         )}
 
-
         {/* Main Message */}
 
-        <div className="text-sm text-muted">
+        <div className="text-base leading-6 text-muted">
           {children}
         </div>
 

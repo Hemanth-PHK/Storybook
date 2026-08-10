@@ -74,16 +74,33 @@ function InteractiveModal({
 
 /* ============================================================================
    Default
+   ----------------------------------------------------------------------------
+   Generic informational modal.
 ============================================================================ */
 
 export const Default: Story = {
+  args: {
+    title: "Student Details",
+    size: "md",
+  },
+
   render: (args) => (
     <InteractiveModal args={args}>
-      <p>Are you sure you want to delete this student?</p>
+      <div className="space-y-4">
+        <p>
+          This modal displays information about a student. It can be used
+          to show details, forms, or other content without requiring a
+          confirmation action.
+        </p>
+
+        <p className="text-sm text-muted">
+          You can close this dialog by clicking the close icon or outside
+          the modal.
+        </p>
+      </div>
     </InteractiveModal>
   ),
 };
-
 /* ============================================================================
    Small
 ============================================================================ */
@@ -118,42 +135,56 @@ export const Medium: Story = {
   ),
 };
 
-/* ============================================================================
-   Large
-============================================================================ */
-
 export const Large: Story = {
   args: {
     size: "lg",
-    title: "Large Modal",
+    title: "Student Profile",
   },
 
   render: (args) => (
     <InteractiveModal args={args}>
-      <p>
-        This is a large modal with additional space
-        for larger content.
-      </p>
+      <div className="space-y-4">
+        <p>
+          This large modal provides additional space for displaying
+          detailed information, forms, or rich content.
+        </p>
+
+        <p>
+          It is commonly used for profile management, editing records,
+          or reviewing large datasets before saving.
+        </p>
+      </div>
     </InteractiveModal>
   ),
 };
 /* ============================================================================
    Confirmation Dialog
 ============================================================================ */
-export const Confirmation: Story = {
+/* ============================================================================
+   Delete Confirmation
+============================================================================ */
+
+export const DeleteConfirmation: Story = {
   args: {
-    title: "Delete Confirmation",
+    title: "Delete Student",
+    size: "md",
     closeOnOverlay: false,
   },
 
   render: (args) => (
     <InteractiveModal args={args}>
       <>
-        <p className="mb-4">
-          Are you sure you want to delete this item?
-        </p>
+        <div className="space-y-3">
+          <p className="text-base">
+            Are you sure you want to permanently delete this student?
+          </p>
 
-        <div className="flex justify-end gap-2">
+          <p className="text-sm text-muted">
+            This action cannot be undone.
+          </p>
+        </div>
+
+        <div className="mt-8 flex justify-end gap-3 border-t border-border pt-5">
           <Button variant="secondary">
             Cancel
           </Button>
@@ -167,6 +198,43 @@ export const Confirmation: Story = {
   ),
 };
 
+/* ============================================================================
+   Submit Confirmation
+============================================================================ */
+
+export const SubmitConfirmation: Story = {
+  args: {
+    title: "Submit Application",
+    size: "md",
+    closeOnOverlay: false,
+  },
+
+  render: (args) => (
+    <InteractiveModal args={args}>
+      <>
+        <div className="space-y-3">
+          <p className="text-base">
+            Are you sure you want to submit this application?
+          </p>
+
+          <p className="text-sm text-muted">
+            Once submitted, the information cannot be edited.
+          </p>
+        </div>
+
+        <div className="mt-8 flex justify-end gap-3 border-t border-border pt-5">
+          <Button variant="secondary">
+            Cancel
+          </Button>
+
+          <Button variant="primary">
+            Submit
+          </Button>
+        </div>
+      </>
+    </InteractiveModal>
+  ),
+};
 /* ============================================================================
    Without Title
 ============================================================================ */

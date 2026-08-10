@@ -34,8 +34,7 @@ export function Modal({
   className,
   ...props
 }: ModalProps) {
-
-  /* Close the modal when Escape is pressed. */
+  /* Close modal using Escape key */
   useEffect(() => {
     if (!open) return;
 
@@ -52,10 +51,8 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  /* Don't render anything while closed. */
-  if (!open) {
-    return null;
-  }
+  /* Don't render when closed */
+  if (!open) return null;
 
   return (
     <div
@@ -68,9 +65,8 @@ export function Modal({
     >
       <div
         className={cn(
-          "w-full rounded-lg border border-border",
-          "bg-surface text-text shadow-xl",
-          "overflow-hidden",
+          "w-full overflow-hidden rounded-xl shadow-2xl",
+          "border border-border",
           sizeClasses[size],
           className,
         )}
@@ -80,26 +76,39 @@ export function Modal({
         onClick={(event) => event.stopPropagation()}
         {...props}
       >
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        {/* ==========================================================
+            HEADER
+        ========================================================== */}
+
+        <div
+          className={cn(
+            "flex items-center",
+            "bg-primary text-primary-foreground",
+            "px-6 py-5",
+          )}
+        >
           {title && (
             <h2
               id="modal-title"
-              className="text-lg font-semibold"
+              className="text-xl font-semibold"
             >
               {title}
             </h2>
           )}
 
+          {/* Push close button to the right */}
           <button
             type="button"
             onClick={onClose}
             className={cn(
               "ml-auto rounded-md p-2",
-              "text-muted transition-colors",
-              "hover:bg-surface-hover hover:text-text",
+              "transition-colors",
+
+              "hover:bg-white/20",
+
               "focus-visible:outline-none",
               "focus-visible:ring-2",
-              "focus-visible:ring-primary",
+              "focus-visible:ring-white",
             )}
             aria-label="Close Modal"
           >
@@ -107,7 +116,16 @@ export function Modal({
           </button>
         </div>
 
-        <div className="px-6 py-5">
+        {/* ==========================================================
+            BODY
+        ========================================================== */}
+
+        <div
+          className={cn(
+            "bg-surface text-text",
+            "px-6 py-8",
+          )}
+        >
           {children}
         </div>
       </div>

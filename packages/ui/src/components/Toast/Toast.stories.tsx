@@ -1,8 +1,6 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Toast } from "./Toast";
-import { Button } from "../Button";
 
 
 
@@ -21,14 +19,6 @@ const meta = {
       control: "select",
       options: ["success", "error", "warning", "info"],
     },
-
-    dismissible: {
-      control: "boolean",
-    },
-
-    onDismiss: {
-      action: "dismissed",
-    },
   },
 } satisfies Meta<typeof Toast>;
 
@@ -46,7 +36,6 @@ export const Default: Story = {
     variant: "info",
     title: "Information",
     children: "This is an informational notification.",
-    dismissible: true,
   },
 };
 
@@ -60,7 +49,6 @@ export const Success: Story = {
     variant: "success",
     title: "Success",
     children: "Your changes have been saved successfully.",
-    dismissible: true,
   },
 };
 
@@ -74,7 +62,6 @@ export const Error: Story = {
     variant: "error",
     title: "Error",
     children: "Something went wrong. Please try again.",
-    dismissible: true,
   },
 };
 
@@ -88,7 +75,6 @@ export const Warning: Story = {
     variant: "warning",
     title: "Warning",
     children: "Please review your information before continuing.",
-    dismissible: true,
   },
 };
 
@@ -102,95 +88,120 @@ export const Info: Story = {
     variant: "info",
     title: "Information",
     children: "A new update is available.",
-    dismissible: true,
   },
 };
 
 
 /* ============================================================================
-   Without Title
+   Success Without Title
+   ----------------------------------------------------------------------------
+   Positive Toast without a heading.
    ============================================================================ */
 
-export const WithoutTitle: Story = {
+export const SuccessWithoutTitle: Story = {
   args: {
     variant: "success",
     children: "Your changes have been saved successfully.",
-    dismissible: true,
   },
 };
 
 
 /* ============================================================================
-   Not Dismissible
+   Error Without Title
+   ----------------------------------------------------------------------------
+   Negative Toast without a heading.
    ============================================================================ */
 
-export const NotDismissible: Story = {
+export const ErrorWithoutTitle: Story = {
   args: {
-    variant: "info",
-    title: "Information",
-    children: "This notification cannot be dismissed.",
-    dismissible: false,
+    variant: "error",
+    children: "Something went wrong while processing your request.",
   },
 };
 
 
 /* ============================================================================
-   Long Content
+   Success Long Content
+   ----------------------------------------------------------------------------
+   Positive Toast containing a longer message.
    ============================================================================ */
 
-export const LongContent: Story = {
+export const SuccessLongContent: Story = {
+  args: {
+    variant: "success",
+    title: "Operation Completed",
+    children:
+      "Your changes have been saved successfully. All requested updates were processed correctly and the latest information is now available in the system.",
+  },
+};
+
+
+/* ============================================================================
+   Warning Long Content
+   ----------------------------------------------------------------------------
+   Warning Toast containing a longer message.
+   ============================================================================ */
+
+export const WarningLongContent: Story = {
   args: {
     variant: "warning",
     title: "Important Notice",
     children:
-      "This is a longer notification message used to verify how the Toast behaves when the content spans multiple lines and different screen sizes.",
-    dismissible: true,
+      "Please review the provided information carefully before continuing. Some details may require your attention to prevent unexpected results during the next step.",
   },
 };
 
 
 /* ============================================================================
-   Interactive Dismiss
+   All Toasts
+   ----------------------------------------------------------------------------
+   Displays all supported Toast variants together.
+
+   This story helps verify:
+   - Variant colors
+   - Icons
+   - Typography
+   - Spacing
+   - Consistent dimensions
+   - Theme behavior
    ============================================================================ */
 
-function InteractiveToastExample() {
-  const [visible, setVisible] = useState(true);
-
-function handleDismiss() {
-  console.log("DISMISS FUNCTION CALLED");
-  setVisible(false);
-}
-  function handleShow() {
-    setVisible(true);
-  }
-
-  return (
-    <div className="flex min-h-32 flex-col items-center justify-center gap-4">
-      {visible ? (
-        <Toast
-          variant="success"
-          title="Success"
-          dismissible
-          onDismiss={handleDismiss}
-        >
-          Your changes have been saved successfully.
-        </Toast>
-      ) : (
-        <Button
-          variant="primary"
-          onClick={handleShow}
-        >
-          Show Toast
-        </Button>
-      )}
-    </div>
-  );
-}
-
-export const InteractiveDismiss: Story = {
+export const AllToasts: Story = {
   args: {
-    children: "Interactive Toast",
+    children: "All Toast Variants",
   },
 
-  render: () => <InteractiveToastExample />,
+  render: () => (
+    <div className="flex flex-col gap-5">
+
+      <Toast
+        variant="success"
+        title="Success"
+      >
+        Your changes have been saved successfully.
+      </Toast>
+
+      <Toast
+        variant="error"
+        title="Error"
+      >
+        Something went wrong. Please try again.
+      </Toast>
+
+      <Toast
+        variant="warning"
+        title="Warning"
+      >
+        Please review your information before continuing.
+      </Toast>
+
+      <Toast
+        variant="info"
+        title="Information"
+      >
+        A new update is available.
+      </Toast>
+
+    </div>
+  ),
 };
