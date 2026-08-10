@@ -3,7 +3,6 @@ import { type HTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 
 
-
 type Variant = "text" | "avatar" | "rect";
 
 export interface SkeletonProps

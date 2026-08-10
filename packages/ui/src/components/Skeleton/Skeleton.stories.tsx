@@ -30,9 +30,9 @@ export default meta;
 
 type Story = StoryObj<typeof Skeleton>;
 
-/* ============================================================================
+/* 
    Text
-============================================================================ */
+*/
 
 export const Text: Story = {
   render: (args) => (
@@ -40,9 +40,9 @@ export const Text: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Avatar
-============================================================================ */
+ */
 
 export const Avatar: Story = {
   args: {
@@ -50,9 +50,9 @@ export const Avatar: Story = {
   },
 };
 
-/* ============================================================================
+/* 
    Rectangle
-============================================================================ */
+ */
 
 export const Rectangle: Story = {
   args: {
@@ -62,9 +62,9 @@ export const Rectangle: Story = {
   },
 };
 
-/* ============================================================================
+/* 
    Card Loading
-============================================================================ */
+ */
 
 export const CardLoading: Story = {
   render: () => (
@@ -87,9 +87,9 @@ export const CardLoading: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Profile Loading
-============================================================================ */
+*/
 
 export const ProfileLoading: Story = {
   render: () => (
@@ -105,9 +105,9 @@ export const ProfileLoading: Story = {
   ),
 };
 
-/* ============================================================================
+/* 
    Dashboard Loading
-============================================================================ */
+ */
 
 export const DashboardLoading: Story = {
   render: () => (
@@ -133,6 +133,47 @@ export const DashboardLoading: Story = {
           height="120px"
         />
       </div>
+    </div>
+  ),
+};
+/* 
+   Image Loading
+*/
+
+export const ImageLoading: Story = {
+  render: () => (
+    <div className="space-y-4 max-w-sm">
+      <Skeleton
+        variant="rect"
+        width="100%"
+        height="220px"
+      />
+
+      <Skeleton width="70%" />
+
+      <Skeleton width="45%" />
+    </div>
+  ),
+};
+
+/* 
+   Video Loading
+*/
+
+export const VideoLoading: Story = {
+  render: () => (
+    <div className="space-y-4">
+      <Skeleton
+        variant="rect"
+        width="100%"
+        height="250px"
+      />
+
+      <Skeleton width="60%" />
+
+      <Skeleton width="90%" />
+
+      <Skeleton width="75%" />
     </div>
   ),
 };
