@@ -6,36 +6,6 @@ import {
 
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Modal — THE REFERENCE COMPONENT
-   ----------------------------------------------------------------------------
-   A Modal (Dialog) displays important content above the current page.
-
-   This component follows the same architecture as Button.
-
-   1. TYPED PROPS
-      - Extends native HTML <div> attributes.
-      - Consumers automatically receive className, id, style,
-        aria-*, data-* and other standard HTML props.
-
-   2. CONTROLLED COMPONENT
-      - Visibility is controlled by the parent.
-      - The component never owns its own open state.
-
-   3. DESIGN TOKENS
-      - Uses design token classes only.
-      - No raw colors are used inside the component.
-
-   4. REUSABILITY
-      - Works for confirmation dialogs, forms,
-        edit screens and custom content.
-
-   5. ACCESSIBILITY
-      - Supports keyboard users.
-      - Supports Escape key.
-      - Supports overlay click.
-      - Uses role="dialog" and aria-modal.
-============================================================================ */
 
 type Size = "sm" | "md" | "lg";
 

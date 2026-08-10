@@ -5,42 +5,7 @@ import {
 
 import { cn } from "../../utils/cn";
 
-/* ============================================================================
-   Button — THE REFERENCE COMPONENT
-   ----------------------------------------------------------------------------
-   A Button allows users to perform actions with a single click.
-
-   This component follows the same architecture as Card and Modal.
-
-   1. TYPED PROPS
-      - Extends native HTML <button> attributes.
-      - Supports className, id, style, aria-*, data-* and more.
-
-   2. DESIGN TOKENS
-      - Uses design token classes only.
-      - No raw colors are used.
-
-   3. REUSABILITY
-      - Supports multiple variants.
-      - Supports different sizes.
-      - Supports loading and disabled states.
-
-   4. ACCESSIBILITY
-      - Native button element.
-      - Keyboard accessible.
-      - Supports disabled state.
-
-   5. CUSTOMIZATION
-      - Supports custom class names.
-============================================================================ */
-
-type Variant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger";
-
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 export interface ButtonProps

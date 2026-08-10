@@ -2,24 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Button } from "./Button";
 
-/* ============================================================================
-   Button.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   Every exported object below represents one visual state.
 
-   Storybook automatically creates interactive documentation.
-
-   Use this file to verify
-
-   • Different variants
-   • Different sizes
-   • Loading state
-   • Disabled state
-   • Theme switching
-   • Accessibility
-
-   Each story represents a realistic use case.
-============================================================================ */
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",

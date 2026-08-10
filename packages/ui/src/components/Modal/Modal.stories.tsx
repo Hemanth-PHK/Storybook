@@ -4,24 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Modal } from "./Modal";
 import { Button } from "../Button";
 
-/* ============================================================================
-   Modal.stories — THE REFERENCE STORY
-   ----------------------------------------------------------------------------
-   Every exported object below represents one visual state.
 
-   Storybook automatically creates interactive documentation.
-
-   Use this file to verify
-
-   • Different sizes
-   • Different titles
-   • Different content
-   • Theme switching
-   • Accessibility
-   • Component behavior
-
-   Each story represents a realistic use case.
-============================================================================ */
 
 const meta: Meta<typeof Modal> = {
   title: "Components/Modal",

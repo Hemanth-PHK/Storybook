@@ -4,17 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Toast } from "./Toast";
 import { Button } from "../Button";
 
-/* ============================================================================
-   Toast Stories
-   ----------------------------------------------------------------------------
-   Stories used to test:
 
-   1. Toast variants
-   2. Optional title
-   3. Dismissible behavior
-   4. Long content
-   5. Interactive dismiss/show behavior
-   ========================================================================= */
 
 const meta = {
   title: "Components/Toast",
