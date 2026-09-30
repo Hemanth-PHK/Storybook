@@ -1,19 +1,35 @@
+
 import type { Meta, StoryObj } from "@storybook/react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { cn } from "../../utils/cn";
-import { Select } from "./Select";
+import { Select, type SelectOption } from "./Select";
 
-const options = (
-  <>
-    <option value="dsa">
-      Data Structures & Algorithms
-    </option>
-    <option value="react">React</option>
-    <option value="python">Python</option>
-    <option value="java">Java</option>
-  </>
-);
+const courses: SelectOption[] = [
+  {
+    value: "dsa",
+    label: "Data Structures & Algorithms",
+  },
+  {
+    value: "react",
+    label: "React",
+  },
+  {
+    value: "python",
+    label: "Python",
+  },
+  {
+    value: "java",
+    label: "Java",
+  },
+  {
+    value: "advanced-dsa",
+    label:
+      "Advanced Data Structures and Algorithms with Problem Solving and Competitive Programming",
+  },
+
+
+];
 
 const StoryCard = ({
   title,
@@ -26,14 +42,15 @@ const StoryCard = ({
 }) => (
   <div
     className={cn(
-      "rounded-xl border p-8",
+      "box-border w-full min-w-0 max-w-full",
+      "rounded-xl border p-4 sm:p-6 lg:p-8",
       "bg-surface",
       error
         ? "border-danger bg-danger/5"
         : "border-border",
     )}
   >
-    <h3 className="mb-6 text-lg font-semibold text-text">
+    <h3 className="mb-5 text-base font-semibold text-text sm:text-lg">
       {title}
     </h3>
 
@@ -41,34 +58,13 @@ const StoryCard = ({
   </div>
 );
 
-const FieldTitle = () => (
-  <p className="mb-5 font-semibold text-text">
-    Select a course{" "}
-    <span className="text-danger">*</span>
-  </p>
-);
-
 const meta: Meta<typeof Select> = {
   title: "Components/Select",
   component: Select,
   tags: ["autodocs"],
-
   args: {
     placeholder: "Select a course",
-  },
-
-  argTypes: {
-    invalid: {
-      control: "boolean",
-    },
-
-    disabled: {
-      control: "boolean",
-    },
-
-    placeholder: {
-      control: "text",
-    },
+    options: courses,
   },
 };
 
@@ -80,63 +76,91 @@ type Story = StoryObj<typeof Select>;
    Default
 ============================================================================ */
 
-export const Default: Story = {
-  render: (args) => (
+function DefaultStory() {
+  const [course, setCourse] = useState("");
+
+  return (
     <StoryCard title="1. Default state">
-      <FieldTitle />
+      <label
+        htmlFor="default-course"
+        className="mb-3 block text-sm font-semibold text-text"
+      >
+        Select a course <span className="text-danger">*</span>
+      </label>
 
-      <Select {...args}>
-        {options}
-      </Select>
+      <Select
+        id="default-course"
+        options={courses}
+        value={course}
+        onChange={setCourse}
+        placeholder="Select a course"
+        required
+      />
 
-      <div className="mt-6 border-t border-border pt-4">
-        <p className="text-sm leading-6 text-muted">
-          Before validation:
-          <br />
-          no error message is displayed.
-        </p>
-      </div>
+      <p className="mt-3 text-sm leading-5 text-muted">
+        {course
+          ? "Course selected successfully."
+          : "Choose a course to continue."}
+      </p>
     </StoryCard>
-  ),
+  );
+}
+
+export const Default: Story = {
+  render: () => <DefaultStory />,
 };
 
 /* ============================================================================
    Error
 ============================================================================ */
 
-export const Error: Story = {
-  render: (args) => (
-    <StoryCard title="2. Error state" error>
-      <FieldTitle />
+function ErrorStory() {
+  const [course, setCourse] = useState("");
+  const hasError = course === "";
+
+  return (
+    <StoryCard title="2. Error state" error={hasError}>
+      <label
+        htmlFor="error-course"
+        className="mb-3 block text-sm font-semibold text-text"
+      >
+        Select a course <span className="text-danger">*</span>
+      </label>
 
       <Select
-        {...args}
-        invalid
-        defaultValue=""
-      >
-        {options}
-      </Select>
+        id="error-course"
+        options={courses}
+        value={course}
+        onChange={setCourse}
+        placeholder="Select a course"
+        invalid={hasError}
+        required
+        aria-describedby={
+          hasError ? "course-error-message" : undefined
+        }
+      />
 
-      <p className="mt-5 flex items-center gap-2 font-medium text-danger">
-        <span
-          aria-hidden="true"
-          className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-danger text-xs"
+      {hasError ? (
+        <p
+          id="course-error-message"
+          className="mt-3 text-sm font-medium leading-5 text-danger"
         >
-          !
-        </span>
-
-        Please select a course.
-      </p>
-
-      <div className="mt-6 border-t border-danger/30 pt-4">
-        <p className="text-sm leading-6 text-muted">
-          Show after validation fails.
-          <br />
-          The select remains available for correction.
+          Please select a course.
         </p>
-      </div>
+      ) : (
+        <p
+          role="status"
+          className="mt-3 text-sm leading-5 text-success"
+        >
+          Course selected successfully.
+        </p>
+      )}
     </StoryCard>
-  ),
+  );
+}
+
+export const Error: Story = {
+  render: () => <ErrorStory />,
 };
 
 /* ============================================================================
@@ -144,23 +168,25 @@ export const Error: Story = {
 ============================================================================ */
 
 export const Disabled: Story = {
-  render: (args) => (
+  render: () => (
     <StoryCard title="3. Disabled state">
-      <FieldTitle />
+      <label
+        htmlFor="disabled-course"
+        className="mb-3 block text-sm font-semibold text-text"
+      >
+        Select a course
+      </label>
 
       <Select
-        {...args}
-        disabled
+        id="disabled-course"
+        options={courses}
         defaultValue="react"
-      >
-        {options}
-      </Select>
+        disabled
+      />
 
-      <div className="mt-6 border-t border-border pt-4">
-        <p className="text-sm leading-6 text-muted">
-          The select is disabled and cannot be changed.
-        </p>
-      </div>
+      <p className="mt-3 text-sm leading-5 text-muted">
+        The selected course cannot be changed.
+      </p>
     </StoryCard>
   ),
 };

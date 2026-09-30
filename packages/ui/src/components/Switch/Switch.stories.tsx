@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 
-import { Switch } from "./Switch";
+import { Switch, type SwitchProps } from "./Switch";
+
+
 
 const meta: Meta<typeof Switch> = {
+
+  
   title: "Components/Switch",
   component: Switch,
   tags: ["autodocs"],
@@ -34,6 +39,7 @@ const meta: Meta<typeof Switch> = {
   },
 };
 
+
 export default meta;
 
 type Story = StoryObj<typeof Switch>;
@@ -42,7 +48,25 @@ type Story = StoryObj<typeof Switch>;
    Default
 ============================================================================ */
 
+function DefaultSwitchStory(args: SwitchProps) {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <Switch
+      {...args}
+      label={
+        enabled
+          ? "Notifications enabled"
+          : "Enable notifications"
+      }
+      checked={enabled}
+      onChange={(e) => setEnabled(e.target.checked)}
+    />
+  );
+}
+
 export const Default: Story = {
+  render: (args) => <DefaultSwitchStory {...args} />,
   args: {
     label: "Enable notifications",
   },
@@ -52,10 +76,27 @@ export const Default: Story = {
    Checked
 ============================================================================ */
 
+function CheckedSwitchStory(args: SwitchProps) {
+  const [enabled, setEnabled] = useState(true);
+
+  return (
+    <Switch
+      {...args}
+      label={
+        enabled
+          ? "Notifications enabled"
+          : "Notifications disabled"
+      }
+      checked={enabled}
+      onChange={(e) => setEnabled(e.target.checked)}
+    />
+  );
+}
+
 export const Checked: Story = {
+  render: (args) => <CheckedSwitchStory {...args} />,
   args: {
-    label: "Enable notifications",
-    defaultChecked: true,
+    label: "Notifications enabled",
   },
 };
 
@@ -63,10 +104,29 @@ export const Checked: Story = {
    Error
 ============================================================================ */
 
+function ErrorSwitchStory(args: SwitchProps) {
+  const [accepted, setAccepted] = useState(false);
+
+  return (
+    <Switch
+      {...args}
+      label={
+        accepted
+          ? "Learning policy accepted"
+          : "Please accept learning policy"
+      }
+      checked={accepted}
+      invalid={!accepted}
+      onChange={(e) => setAccepted(e.target.checked)}
+    />
+  );
+}
+
 export const Error: Story = {
+  render: (args) => <ErrorSwitchStory {...args} />,
+
   args: {
-    label: "Enable notifications",
-    invalid: true,
+    label: "Accept learning policy",
   },
 };
 

@@ -60,7 +60,10 @@ export function RadioGroup({
 
   return (
     <fieldset
-      className={cn("w-full border-0 p-0", className)}
+      className={cn(
+        "w-full min-w-0 max-w-full border-0 p-0",
+        className,
+      )}
       aria-invalid={invalid}
       {...props}
     >
@@ -71,7 +74,7 @@ export function RadioGroup({
           "flex gap-4",
           orientation === "vertical"
             ? "flex-col"
-            : "flex-row flex-wrap",
+            : "flex-col sm:flex-row sm:flex-wrap",
         )}
       >
         {options.map((option) => {
@@ -84,7 +87,7 @@ export function RadioGroup({
               key={option.value}
               htmlFor={inputId}
               className={cn(
-                "flex items-center gap-3",
+                "flex min-w-0 max-w-full items-start gap-3",
                 isDisabled
                   ? "cursor-not-allowed opacity-50"
                   : "cursor-pointer",
@@ -105,7 +108,7 @@ export function RadioGroup({
               <span
                 aria-hidden="true"
                 className={cn(
-                  "relative flex h-5 w-5 shrink-0",
+                  "relative  mt-0.5 flex h-5 w-5 shrink-0",
                   "items-center justify-center",
                   "rounded-full border-2",
                   "transition-colors duration-150",
@@ -139,7 +142,13 @@ export function RadioGroup({
                 />
               </span>
 
-              <span className="text-text">
+              <span
+                className={cn(
+                  "min-w-0 max-w-full flex-1",
+                  "whitespace-normal text-text",
+                  "[overflow-wrap:anywhere]",
+                )}
+              >
                 {option.label}
               </span>
             </label>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { cn } from "../../utils/cn";
 import { RadioGroup } from "./RadioGroup";
@@ -17,10 +17,20 @@ const options = [
     value: "python",
     label: "Python",
   },
+   {
+    value: "Long",
+    label:`TheMallaReddyEngineeringColleges
+    locatedinHyderabadTelanganasareprimarilya
+    ffiliatedwithJawaharlalNehruTechnologicalUniversity
+    HyderabadJNTUHEstablishedundertheMallaReddyGroupof
+    InstitutionsMRGIprominentcampusoslikethe
+    MallaReddyEngineeringCollegeMRECandMallaReddyCollegeofEngineer`
+  },
   {
     value: "java",
     label: "Java",
   },
+ 
 ];
 
 const StoryCard = ({
@@ -34,7 +44,7 @@ const StoryCard = ({
 }) => (
   <div
     className={cn(
-      "rounded-xl border p-8",
+      "w-full min-w-0 max-w-full rounded-xl border p-4 sm:p-6 lg:p-8",
       "bg-surface",
       error
         ? "border-danger bg-danger/5"
@@ -145,36 +155,62 @@ export const Horizontal: Story = {
    Error
 ============================================================================ */
 
-export const Error: Story = {
-  render: (args) => (
-    <StoryCard title="3. Error state" error>
-      <FieldTitle />
+function ErrorStory() {
+  const [course, setCourse] = useState("");
 
-      <RadioGroup
-        {...args}
-        invalid
-        defaultValue=""
-      />
+  const hasError = course === "";
 
-      <p className="mt-5 flex items-center gap-2 font-medium text-danger">
-        <span
-          aria-hidden="true"
-          className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-danger text-xs"
-        >
-          !
-        </span>
-
-        Please select one option.
+  return (
+    <StoryCard title="3. Error state" error={hasError}>
+      <p
+        id="course-radio-label"
+        className="mb-5 font-semibold text-text"
+      >
+        Select a course{" "}
+        <span className="text-danger">*</span>
       </p>
 
-      <div className="mt-6 border-t border-danger/30 pt-4">
+      <RadioGroup
+        name="error-course"
+        options={options}
+        value={course}
+        onValueChange={setCourse}
+        invalid={hasError}
+        aria-labelledby="course-radio-label"
+        aria-describedby={
+          hasError ? "course-radio-error" : undefined
+        }
+      />
+
+      {hasError && (
+        <p
+          id="course-radio-error"
+          role="alert"
+          className="mt-5 flex items-center gap-2 font-medium text-danger"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-danger text-xs"
+          >
+            !
+          </span>
+
+          Please select one option.
+        </p>
+      )}
+
+      <div className="mt-6 border-t border-border pt-4">
         <p className="text-sm text-muted">
-          Show after validation fails. All options must
-          remain selectable.
+          Show after validation fails. Selecting a valid
+          option clears the error state.
         </p>
       </div>
     </StoryCard>
-  ),
+  );
+}
+
+export const Error: Story = {
+  render: () => <ErrorStory />,
 };
 
 /* ============================================================================
@@ -264,9 +300,6 @@ export const ValidationStates: Story = {
           defaultValue="dsa"
         />
 
-        <p className="mt-6 font-medium text-success">
-          Selection accepted.
-        </p>
 
         <div className="mt-6 border-t border-border pt-4">
           <p className="text-sm leading-6 text-muted">

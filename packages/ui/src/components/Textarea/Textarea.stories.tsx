@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { cn } from "../../utils/cn";
 import { Textarea } from "./Textarea";
@@ -30,11 +30,14 @@ const StoryCard = ({
   </div>
 );
 
-const FieldTitle = () => (
-  <p className="mb-5 font-semibold text-text">
+const FieldTitle = ({ htmlFor }: { htmlFor: string }) => (
+  <label
+    htmlFor={htmlFor}
+    className="mb-5 block font-semibold text-text"
+  >
     Course description{" "}
     <span className="text-danger">*</span>
-  </p>
+  </label>
 );
 
 const meta: Meta<typeof Textarea> = {
@@ -76,10 +79,11 @@ type Story = StoryObj<typeof Textarea>;
 export const Default: Story = {
   render: (args) => (
     <StoryCard title="1. Default state">
-      <FieldTitle />
+      <FieldTitle htmlFor="default-description" />
 
       <Textarea
         {...args}
+          id="default-description"
         placeholder="Enter your message"
       />
 
@@ -101,10 +105,11 @@ export const Default: Story = {
 export const CharacterLimit: Story = {
   render: (args) => (
     <StoryCard title="2. Character limit">
-      <FieldTitle />
+      <FieldTitle htmlFor="limited-description"  />
 
       <Textarea
         {...args}
+        id="limited-description"
         placeholder="Write your course description..."
         showCount
         maxLength={200}
@@ -126,38 +131,78 @@ export const CharacterLimit: Story = {
    Error
 ============================================================================ */
 
-export const Error: Story = {
-  render: (args) => (
-    <StoryCard title="3. Error state" error>
-      <FieldTitle />
+
+
+function ErrorStory() {
+  const [feedback, setFeedback] = useState("");
+
+  const MIN_LENGTH = 20;
+
+  const trimmedFeedback = feedback.trim();
+  const characterCount = trimmedFeedback.length;
+
+  const isEmpty = characterCount === 0;
+  const isTooShort =
+    characterCount > 0 && characterCount < MIN_LENGTH;
+
+  const hasError = isEmpty || isTooShort;
+
+  const errorMessage = isEmpty
+    ? "Feedback is required."
+    : isTooShort
+      ? `Please enter at least ${MIN_LENGTH} characters.`
+      : "";
+
+  return (
+    <StoryCard title="3. Error state" error={hasError}>
+      <label
+        htmlFor="error-feedback"
+        className="mb-5 block font-semibold text-text"
+      >
+        Course feedback{" "}
+        <span className="text-danger">*</span>
+      </label>
 
       <Textarea
-        {...args}
-        placeholder="Enter your feedback"
-        invalid
+        id="error-feedback"
+        placeholder="Describe your learning experience..."
+        value={feedback}
+        onChange={(event) => setFeedback(event.target.value)}
+        invalid={hasError}
+        required
+        minLength={MIN_LENGTH}
+        aria-describedby={
+          hasError ? "feedback-error" : undefined
+        }
       />
 
-      <p className="mt-5 flex items-center gap-2 font-medium text-danger">
-        <span
-          aria-hidden="true"
-          className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-danger text-xs"
+      {hasError && (
+        <p
+          id="feedback-error"
+          role="alert"
+          className="mt-3 flex items-center gap-2 text-sm font-medium text-danger"
         >
-          !
-        </span>
+          <span aria-hidden="true">!</span>
+          {errorMessage}
+        </p>
+      )}
 
-        Please enter your feedback.
-      </p>
-
-      <div className="mt-6 border-t border-danger/30 pt-4">
+      <div className="mt-6 border-t border-border pt-4">
         <p className="text-sm leading-6 text-muted">
-          Show after validation fails.
+          Feedback must contain at least {MIN_LENGTH} meaningful
+          characters.
           <br />
-          The textarea remains available for correction.
+          Validation updates as the user corrects the input.
         </p>
       </div>
     </StoryCard>
-  ),
+  );
+}
+
+export const Error: Story = {
+  render: () => <ErrorStory />,
 };
+
 
 /* ============================================================================
    Disabled
@@ -166,10 +211,11 @@ export const Error: Story = {
 export const Disabled: Story = {
   render: (args) => (
     <StoryCard title="4. Disabled state">
-      <FieldTitle />
+      <FieldTitle htmlFor="disabled-description" />
 
       <Textarea
         {...args}
+        id="disabled-description"
         placeholder="This field is disabled"
         disabled
       />
