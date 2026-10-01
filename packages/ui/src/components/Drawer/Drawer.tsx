@@ -1,4 +1,8 @@
-import {forwardRef,useEffect,useRef,
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useRef,
   type HTMLAttributes,
   type ReactNode,
 } from "react";
@@ -12,7 +16,7 @@ export interface DrawerProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   side?: DrawerSide;
-  title: string;
+  title?: string;
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -43,6 +47,8 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
   ) => {
     const drawerRef = useRef<HTMLDivElement | null>(null);
     const triggerRef = useRef<HTMLElement | null>(null);
+    const titleId = useId();
+    const descriptionId = useId();
 
     const setDrawerRef = (node: HTMLDivElement | null) => {
       drawerRef.current = node;
@@ -122,7 +128,11 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
           );
 
-        firstFocusable?.focus();
+        if (firstFocusable) {
+          firstFocusable.focus();
+        } else {
+          drawer.focus();
+        };
       });
 
       return () => {
@@ -156,10 +166,9 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           ref={setDrawerRef}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="drawer-title"
-          aria-describedby={
-            description ? "drawer-description" : undefined
-          }
+          aria-labelledby={title ? titleId : undefined}
+          aria-describedby={description ? descriptionId : undefined}
+          tabIndex={-1}
           className={cn(
             "absolute flex flex-col bg-surface text-text shadow-2xl",
             sideClasses[side],
@@ -169,18 +178,20 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           {...props}
         >
           {/* Header */}
-          <div className="flex items-start justify-between border-b border-border px-6 py-4">
+          <div className="flex items-start justify-between border-b border-border px-4 py-4 sm:px-6">
             <div>
-              <h2
-                id="drawer-title"
-                className="text-lg font-semibold"
-              >
-                {title}
-              </h2>
+              {title && (
+                <h2
+                  id={titleId}
+                  className="text-lg font-semibold"
+                >
+                  {title}
+                </h2>
+              )}
 
               {description && (
                 <p
-                  id="drawer-description"
+                  id={descriptionId}
                   className="mt-1 text-sm text-text/70"
                 >
                   {description}
@@ -206,13 +217,13 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-6">
             {children}
           </div>
 
           {/* Footer */}
           {footer && (
-            <div className="border-t border-border px-6 py-4">
+            <div className="border-t border-border px-4 py-4 sm:px-6">
               {footer}
             </div>
           )}

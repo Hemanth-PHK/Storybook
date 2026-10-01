@@ -1,24 +1,29 @@
+
 import {
   useEffect,
+  useRef,
   type HTMLAttributes,
   type ReactNode,
 } from "react";
 
 import { cn } from "../../utils/cn";
 
+type ModalSize = "sm" | "md" | "lg";
 
-type Size = "sm" | "md" | "lg";
-
-export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
+export interface ModalProps
+  extends Omit<HTMLAttributes<HTMLDialogElement>, "title"> {
   open: boolean;
   title?: string;
+  description?: string;
   children: ReactNode;
   onClose: () => void;
-  size?: Size;
+  size?: ModalSize;
   closeOnOverlay?: boolean;
+  dismissible?: boolean;
+  initialFocusSelector?: string;
 }
 
-const sizeClasses: Record<Size, string> = {
+const sizes: Record<ModalSize, string> = {
   sm: "max-w-sm",
   md: "max-w-lg",
   lg: "max-w-3xl",
@@ -27,108 +32,109 @@ const sizeClasses: Record<Size, string> = {
 export function Modal({
   open,
   title,
+  description,
   children,
   onClose,
   size = "md",
   closeOnOverlay = true,
+  dismissible = true,
+  initialFocusSelector,
   className,
   ...props
 }: ModalProps) {
-  /* Close modal using Escape key */
-  useEffect(() => {
-    if (!open) return;
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        onClose();
-      }
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open && !dialog.open) {
+      dialog.showModal();
+
+      const target = initialFocusSelector
+        ? dialog.querySelector<HTMLElement>(initialFocusSelector)
+        : null;
+
+      target?.focus();
     }
 
-    document.addEventListener("keydown", handleKeyDown);
+    if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [open, initialFocusSelector]);
 
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open, onClose]);
-
-  /* Don't render when closed */
-  if (!open) return null;
+  const handleClose = () => {
+    if (dismissible) onClose();
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={() => {
-        if (closeOnOverlay) {
-          onClose();
+    <dialog
+      {...props}
+      ref={dialogRef}
+      aria-label={title || "Dialog"}
+      onCancel={(event) => {
+        event.preventDefault();
+        handleClose();
+      }}
+      onMouseDown={(event) => {
+        if (!closeOnOverlay || !dismissible) return;
+
+        const rect = event.currentTarget.getBoundingClientRect();
+
+        if (
+          event.clientX < rect.left ||
+          event.clientX > rect.right ||
+          event.clientY < rect.top ||
+          event.clientY > rect.bottom
+        ) {
+          handleClose();
         }
       }}
+      className={cn(
+        "fixed inset-0 m-auto w-[calc(100%-2rem)]",
+        "max-h-[calc(100dvh-2rem)] overflow-hidden",
+        "rounded-xl border border-border bg-surface",
+        "p-0 text-text shadow-2xl",
+        "backdrop:bg-black/50",
+        sizes[size],
+        className,
+      )}
     >
-      <div
-        className={cn(
-          "w-full overflow-hidden rounded-xl shadow-2xl",
-          "border border-border",
-          sizeClasses[size],
-          className,
-        )}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
-        onClick={(event) => event.stopPropagation()}
-        {...props}
-      >
-        {/* ==========================================================
-            HEADER
-        ========================================================== */}
+      <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
+        <div className="flex shrink-0 items-center gap-3 bg-primary px-4 py-4 text-primary-foreground sm:px-6">
+          <h2 className="min-w-0 flex-1 break-words text-lg font-semibold">
+            {title || "Dialog"}
+          </h2>
 
-        <div
-          className={cn(
-            "flex items-center",
-            "bg-primary text-primary-foreground",
-            "px-6 py-5",
-          )}
-        >
-          {title && (
-            <h2
-              id="modal-title"
-              className="text-xl font-semibold"
-            >
-              {title}
-            </h2>
-          )}
-
-          {/* Push close button to the right */}
           <button
             type="button"
-            onClick={onClose}
+            aria-label="Close dialog"
+            disabled={!dismissible}
+            onClick={handleClose}
             className={cn(
-              "ml-auto rounded-md p-2",
-              "transition-colors",
-
+              "shrink-0 rounded-md p-2",
               "hover:bg-white/20",
-
               "focus-visible:outline-none",
-              "focus-visible:ring-2",
-              "focus-visible:ring-white",
+              "focus-visible:ring-2 focus-visible:ring-white",
+              "disabled:opacity-50",
             )}
-            aria-label="Close Modal"
           >
             ✕
           </button>
         </div>
 
-        {/* ==========================================================
-            BODY
-        ========================================================== */}
-
-        <div
-          className={cn(
-            "bg-surface text-text",
-            "px-6 py-8",
+        <div className="min-h-0 overflow-y-auto px-4 py-5 sm:px-6">
+          {description && (
+            <p className="mb-6 break-words text-sm leading-6">
+              {description}
+            </p>
           )}
-        >
+
           {children}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
+
+Modal.displayName = "Modal";

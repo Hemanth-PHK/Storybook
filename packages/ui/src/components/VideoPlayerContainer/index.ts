@@ -1,11 +1,7 @@
-export {
-  VideoPlayerContainer,
-} from "./VideoPlayerContainer";
+export { VideoPlayerContainer } from "./VideoPlayerContainer";
 
 export type {
-  MenuType,
-  VideoCaption,
-  VideoLanguage,
   VideoPlayerContainerProps,
-  VideoQuality,
+  CaptionOption,
+  MediaOption,
 } from "./VideoPlayerUtils";

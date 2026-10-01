@@ -1,4 +1,4 @@
-import { useState, type ComponentProps } from "react";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Button } from "../Button";
@@ -15,7 +15,7 @@ const meta: Meta<typeof Drawer> = {
 
   args: {
     title: "Drawer Title",
-    description: "This is a reusable drawer component.",
+    description: "Additional information can be displayed here.",
     closeOnOverlayClick: true,
   },
 
@@ -26,11 +26,23 @@ const meta: Meta<typeof Drawer> = {
     },
 
     open: {
-      control: "boolean",
+      control: false,
+    },
+
+    onOpenChange: {
+      control: false,
     },
 
     closeOnOverlayClick: {
       control: "boolean",
+    },
+
+    children: {
+      control: false,
+    },
+
+    footer: {
+      control: false,
     },
   },
 };
@@ -39,11 +51,16 @@ export default meta;
 
 type Story = StoryObj<typeof Drawer>;
 
-function DrawerDemo(props: ComponentProps<typeof Drawer>) {
+interface DrawerDemoProps
+  extends Omit<ComponentProps<typeof Drawer>, "open" | "onOpenChange"> {
+  footer?: ReactNode;
+}
+
+function DrawerDemo({ footer, ...props }: DrawerDemoProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="p-8">
+    <div className="min-h-screen p-4 sm:p-8">
       <Button onClick={() => setOpen(true)}>
         Open Drawer
       </Button>
@@ -52,55 +69,78 @@ function DrawerDemo(props: ComponentProps<typeof Drawer>) {
         {...props}
         open={open}
         onOpenChange={setOpen}
-        footer={
-          <div className="flex justify-end gap-3">
-            <Button onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-
-            <Button onClick={() => setOpen(false)}>
-              Save
-            </Button>
-          </div>
-        }
+        footer={footer}
       >
-        <div className="space-y-4">
-          <p>
-            This is the drawer content. You can place forms,
-            navigation, filters, or other content here.
-          </p>
-
-          <p>
-            The drawer supports keyboard focus management,
-            Escape-to-close, overlay closing, and background
-            scroll locking.
-          </p>
-        </div>
+        {props.children}
       </Drawer>
     </div>
   );
 }
 
-export const Left: Story = {
-  args: {
-    side: "left",
-  },
+const exampleContent = (
+  <div className="space-y-4">
+    <p>
+      Drawer content is provided by the screen that uses this
+      component.
+    </p>
 
-  render: (args) => <DrawerDemo {...args} />,
-};
+    <p>
+      It can contain filters, navigation, forms, settings, or
+      other application content.
+    </p>
+
+
+    {Array.from({ length: 20 }, (_, index) => (
+      <div key={index} className="rounded-md border border-border p-4">
+        <h3 className="font-medium">
+          Example Section {index + 1}
+        </h3>
+
+        <p className="mt-2 text-sm text-text/70">
+          This is sample content used to verify that long Drawer content
+          scrolls correctly while the header and footer remain usable.
+        </p>
+      </div>
+    ))}
+
+    <Button>Example Action</Button>
+  </div>
+);
 
 export const Right: Story = {
-  args: {
-    side: "right",
-  },
-
-  render: (args) => <DrawerDemo {...args} />,
+  render: (args) => (
+    <DrawerDemo {...args} side="right">
+      {exampleContent}
+    </DrawerDemo>
+  ),
 };
 
-export const Bottom: Story = {
-  args: {
-    side: "bottom",
-  },
+export const Left: Story = {
+  render: (args) => (
+    <DrawerDemo {...args} side="left">
+      {exampleContent}
+    </DrawerDemo>
+  ),
+};
 
-  render: (args) => <DrawerDemo {...args} />,
+export const WithFooter: Story = {
+  render: (args) => (
+    <DrawerDemo
+      {...args}
+      side="right"
+      footer={
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button>
+            Cancel
+          </Button>
+
+          <Button>
+            Apply
+          </Button>
+        </div>
+      }
+    >
+      {exampleContent}
+    </DrawerDemo>
+  ),
 };

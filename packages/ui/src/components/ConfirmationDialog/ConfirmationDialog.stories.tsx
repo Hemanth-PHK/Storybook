@@ -1,5 +1,6 @@
+
+import { useEffect, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
 
 import {
   ConfirmationDialog,
@@ -10,65 +11,24 @@ const meta: Meta<typeof ConfirmationDialog> = {
   title: "Components/ConfirmationDialog",
   component: ConfirmationDialog,
   tags: ["autodocs"],
-
   parameters: {
     layout: "centered",
   },
-
   argTypes: {
-    open: {
-      control: "boolean",
-      description: "Controls whether the dialog is open.",
-    },
-
-    title: {
-      control: "text",
-    },
-
-    description: {
-      control: "text",
-    },
-
-    confirmLabel: {
-      control: "text",
-    },
-
-    cancelLabel: {
-      control: "text",
-    },
-
     variant: {
       control: "select",
       options: ["default", "danger"],
     },
-
-    loading: {
-      control: "boolean",
-    },
-
-    onOpenChange: {
-      table: {
-        disable: true,
-      },
-    },
-
-    onConfirm: {
-      table: {
-        disable: true,
-      },
-    },
-
-    onCancel: {
-      table: {
-        disable: true,
-      },
-    },
-
-    className: {
-      table: {
-        disable: true,
-      },
-    },
+    title: { control: "text" },
+    description: { control: "text" },
+    confirmLabel: { control: "text" },
+    cancelLabel: { control: "text" },
+    open: { control: false },
+    loading: { control: false },
+    onOpenChange: { control: false },
+    onConfirm: { control: false },
+    onCancel: { control: false },
+    className: { control: false },
   },
 };
 
@@ -76,63 +36,108 @@ export default meta;
 
 type Story = StoryObj<typeof ConfirmationDialog>;
 
-const ConfirmationDialogDemo = (
-  args: ConfirmationDialogProps,
-) => {
+interface DemoProps
+  extends Omit<
+    ConfirmationDialogProps,
+    "open" | "onOpenChange" | "onConfirm" | "onCancel"
+  > {
+  simulateLoading?: boolean;
+}
+
+function ConfirmationDialogDemo({
+  simulateLoading = false,
+  ...args
+}: DemoProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleConfirm = () => {
+    if (loading) return;
+
+    if (!simulateLoading) {
+      setMessage("Action confirmed.");
+      setOpen(false);
+      return;
+    }
+
+    setLoading(true);
+    setMessage("Processing confirmation...");
+
+    timerRef.current = setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+      setMessage("Confirmation completed successfully.");
+      timerRef.current = null;
+    }, 1500);
+  };
+
+  const handleCancel = () => {
+    setMessage("Action cancelled.");
+  };
 
   return (
-    <div className="w-[700px] max-w-full">
+    <div className="w-full max-w-md p-4">
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setMessage("");
+          setOpen(true);
+        }}
         className="
-          rounded-md
-          bg-primary
-          px-4
-          py-2
-          text-sm
-          font-medium
-          text-primary-foreground
+          rounded-md bg-primary px-4 py-2
+          text-sm font-medium text-primary-foreground
           hover:opacity-90
           focus-visible:outline-none
           focus-visible:ring-2
           focus-visible:ring-primary
-          focus-visible:ring-offset-2
         "
       >
         Open Confirmation Dialog
       </button>
 
+      {message && (
+        <p
+          role="status"
+          className="mt-4 text-sm text-text"
+        >
+          {message}
+        </p>
+      )}
+
       <ConfirmationDialog
         {...args}
         open={open}
+        loading={loading}
         onOpenChange={setOpen}
-        onConfirm={() => {
-          console.log("Confirmation accepted");
-          setOpen(false);
-        }}
-        onCancel={() => {
-          console.log("Confirmation cancelled");
-          setOpen(false);
-        }}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </div>
   );
-};
+}
 
 export const Default: Story = {
   args: {
-    open: false,
     title: "Confirm action",
     description:
       "Are you sure you want to continue with this action?",
     confirmLabel: "Confirm",
     cancelLabel: "Cancel",
     variant: "default",
-    loading: false,
   },
-
   render: (args) => (
     <ConfirmationDialogDemo {...args} />
   ),
@@ -140,16 +145,13 @@ export const Default: Story = {
 
 export const Destructive: Story = {
   args: {
-    open: false,
-    title: "Delete item",
+    title: "Delete course",
     description:
-      "Are you sure you want to delete this item? This action cannot be undone.",
-    confirmLabel: "Delete",
-    cancelLabel: "Cancel",
+      "Are you sure you want to delete this course? This action cannot be undone.",
+    confirmLabel: "Delete course",
+    cancelLabel: "Keep course",
     variant: "danger",
-    loading: false,
   },
-
   render: (args) => (
     <ConfirmationDialogDemo {...args} />
   ),
@@ -157,23 +159,17 @@ export const Destructive: Story = {
 
 export const Loading: Story = {
   args: {
-    open: false,
-    title: "Processing request",
+    title: "Save changes",
     description:
-      "Please wait while your request is being processed.",
-    confirmLabel: "Confirm",
+      "Confirm to save your changes. The dialog will remain open while the request is processing.",
+    confirmLabel: "Save changes",
     cancelLabel: "Cancel",
     variant: "default",
-    loading: true,
   },
-
   render: (args) => (
-    <ConfirmationDialogDemo {...args} />
+    <ConfirmationDialogDemo
+      {...args}
+      simulateLoading
+    />
   ),
 };
-
-
-
-
-
-

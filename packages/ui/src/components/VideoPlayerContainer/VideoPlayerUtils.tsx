@@ -1,27 +1,22 @@
-export interface VideoCaption {
+export type MediaOption = {
+  label: string;
+  src: string;
+};
+
+export type CaptionOption = {
   src: string;
   srcLang: string;
   label: string;
   default?: boolean;
-}
-
-export interface VideoQuality {
-  label: string;
-  src: string;
-}
-
-export interface VideoLanguage {
-  label: string;
-  src: string;
-}
+};
 
 export interface VideoPlayerContainerProps {
   src: string;
   title: string;
   poster?: string;
-  captions?: VideoCaption[];
-  qualities?: VideoQuality[];
-  languages?: VideoLanguage[];
+  captions?: CaptionOption[];
+  qualities?: MediaOption[];
+  languages?: MediaOption[];
   initialPosition?: number;
   onProgress?: (currentTime: number, duration: number) => void;
   onResume?: (currentTime: number) => void;
@@ -30,26 +25,20 @@ export interface VideoPlayerContainerProps {
   className?: string;
 }
 
-export type MenuType =
-  | "main"
-  | "speed"
-  | "quality"
-  | "language"
-  | "captions"
-  | null;
+export const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-export const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
-export const formatTime = (value: number) => {
-  if (!Number.isFinite(value)) {
-    return "0:00";
-  }
+export function formatTime(value: number) {
+  if (!Number.isFinite(value) || value < 0) return "0:00";
 
-  const minutes = Math.floor(value / 60);
+  const seconds = Math.floor(value);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = String(seconds % 60).padStart(2, "0");
 
-  const seconds = Math.floor(value % 60)
-    .toString()
-    .padStart(2, "0");
-
-  return `${minutes}:${seconds}`;
-};
+  return h
+    ? `${h}:${String(m).padStart(2, "0")}:${s}`
+    : `${m}:${s}`;
+}

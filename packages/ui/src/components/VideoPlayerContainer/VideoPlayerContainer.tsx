@@ -1,26 +1,28 @@
-import React, {
+import {
   useEffect,
   useRef,
   useState,
+  type KeyboardEvent,
 } from "react";
 
 import {
+  clamp,
   formatTime,
-  type MenuType,
-  type VideoLanguage,
+  PLAYBACK_SPEEDS,
   type VideoPlayerContainerProps,
-  type VideoQuality,
 } from "./VideoPlayerUtils";
 
-import {
-  ControlButton,
-  ProgressBar,
-  SeekFeedback,
-} from "./VideoPlayerControls";
+type SettingsMenu = "main" | "speed" | "captions" | "quality" | "audio" | null;
 
-import { SettingsMenu } from "./VideoPlayerMenus";
+const buttonClass =
+  "rounded p-2 text-sm hover:bg-white/20 focus-visible:outline " +
+  "focus-visible:outline-2 focus-visible:outline-white";
 
-export const VideoPlayerContainer = ({
+export function VideoPlayerContainer(props: VideoPlayerContainerProps) {
+  return <Player key={props.src} {...props} />;
+}
+
+function Player({
   src,
   title,
   poster,
@@ -33,856 +35,597 @@ export const VideoPlayerContainer = ({
   onComplete,
   unavailable = false,
   className = "",
-}: VideoPlayerContainerProps) => {
-  const videoRef =
-    useRef<HTMLVideoElement>(null);
+}: VideoPlayerContainerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
+  const initialized = useRef(false);
+  const resumed = useRef(false);
 
-  const containerRef =
-    useRef<HTMLDivElement>(null);
+  const pendingSource = useRef<{
+    time: number;
+    shouldPlay: boolean;
+  } | null>(null);
 
-  const resumeCalledRef =
-    useRef(false);
+  const [source, setSource] = useState(src);
+  const [reload, setReload] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [time, setTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [buffering, setBuffering] = useState(false);
+  const [error, setError] = useState(false);
 
-  const feedbackTimerRef =
-    useRef<number | null>(null);
+  const [menu, setMenu] = useState<SettingsMenu>(null);
+  const [quality, setQuality] = useState("");
+  const [audio, setAudio] = useState("");
+  const [caption, setCaption] = useState(
+    captions.find((item) => item.default)?.srcLang ?? "off"
+  );
 
-  const [playing, setPlaying] =
-    useState(false);
-
-  const [muted, setMuted] =
-    useState(false);
-
-  const [currentTime, setCurrentTime] =
-    useState(0);
-
-  const [duration, setDuration] =
-    useState(0);
-
-  const [playbackRate, setPlaybackRate] =
-    useState(1);
-
-  const [selectedQuality, setSelectedQuality] =
-    useState("");
-
-  const [selectedLanguage, setSelectedLanguage] =
-    useState("");
-
-  const [selectedCaption, setSelectedCaption] =
-    useState<string | "off">("off");
-
-  const [openMenu, setOpenMenu] =
-    useState<MenuType>(null);
-
-  const [isFullscreen, setIsFullscreen] =
-    useState(false);
-
-  const [seekFeedback, setSeekFeedback] =
-    useState<"rewind" | "forward" | null>(
-      null
-    );
+  const video = () => videoRef.current;
 
   useEffect(() => {
-    resumeCalledRef.current = false;
-
-    setPlaying(false);
-    setMuted(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setPlaybackRate(1);
-    setSelectedQuality("");
-    setSelectedLanguage("");
-    setSelectedCaption("off");
-    setOpenMenu(null);
-  }, [src]);
-
- 
-  useEffect(() => {
-    const video = videoRef.current;
-
-    if (!video) return;
-
-    const handleLoadedMetadata = () => {
-      if (!Number.isFinite(video.duration)) {
-        return;
-      }
-
-      setDuration(video.duration);
-
-      if (
-        initialPosition > 0 &&
-        initialPosition < video.duration
-      ) {
-        video.currentTime =
-          initialPosition;
-
-        setCurrentTime(
-          initialPosition
-        );
-      }
+    const syncFullscreen = () => {
+      setFullscreen(document.fullscreenElement === rootRef.current);
     };
 
-    const handleTimeUpdate = () => {
-      const time = video.currentTime;
-
-      setCurrentTime(time);
-
-      if (Number.isFinite(video.duration)) {
-        setDuration(video.duration);
-
-        onProgress?.(
-          time,
-          video.duration
-        );
-      }
-    };
-
-    const handlePlay = () => {
-      setPlaying(true);
-
-      if (!resumeCalledRef.current) {
-        resumeCalledRef.current = true;
-
-        onResume?.(
-          video.currentTime
-        );
-      }
-    };
-
-    const handlePause = () => {
-      setPlaying(false);
-    };
-
-    const handleEnded = () => {
-      setPlaying(false);
-
-      onComplete?.();
-    };
-
-    const handleVolumeChange = () => {
-      setMuted(video.muted);
-    };
-
-    video.addEventListener(
-      "loadedmetadata",
-      handleLoadedMetadata
-    );
-
-    video.addEventListener(
-      "timeupdate",
-      handleTimeUpdate
-    );
-
-    video.addEventListener(
-      "play",
-      handlePlay
-    );
-
-    video.addEventListener(
-      "pause",
-      handlePause
-    );
-
-    video.addEventListener(
-      "ended",
-      handleEnded
-    );
-
-    video.addEventListener(
-      "volumechange",
-      handleVolumeChange
-    );
+    document.addEventListener("fullscreenchange", syncFullscreen);
 
     return () => {
-      video.removeEventListener(
-        "loadedmetadata",
-        handleLoadedMetadata
-      );
-
-      video.removeEventListener(
-        "timeupdate",
-        handleTimeUpdate
-      );
-
-      video.removeEventListener(
-        "play",
-        handlePlay
-      );
-
-      video.removeEventListener(
-        "pause",
-        handlePause
-      );
-
-      video.removeEventListener(
-        "ended",
-        handleEnded
-      );
-
-      video.removeEventListener(
-        "volumechange",
-        handleVolumeChange
-      );
-    };
-  }, [
-    initialPosition,
-    onProgress,
-    onResume,
-    onComplete,
-  ]);
-
-  /*
-   * Fullscreen state
-   */
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(
-        document.fullscreenElement ===
-          containerRef.current
-      );
-    };
-
-    document.addEventListener(
-      "fullscreenchange",
-      handleFullscreenChange
-    );
-
-    return () => {
-      document.removeEventListener(
-        "fullscreenchange",
-        handleFullscreenChange
-      );
+      document.removeEventListener("fullscreenchange", syncFullscreen);
     };
   }, []);
 
-  
-  useEffect(() => {
-    return () => {
-      if (feedbackTimerRef.current) {
-        window.clearTimeout(
-          feedbackTimerRef.current
-        );
-      }
-    };
-  }, []);
+  const syncCaptions = () => {
+    const tracks = video()?.textTracks;
+    if (!tracks) return;
 
-  /*
-   * Play / Pause
-   */
-  const togglePlay = async () => {
-    const video = videoRef.current;
-
-    if (!video) return;
-
-    try {
-      if (video.paused) {
-        await video.play();
-      } else {
-        video.pause();
-      }
-    } catch {
-      setPlaying(false);
+    for (let i = 0; i < tracks.length; i++) {
+      tracks[i].mode =
+        caption !== "off" && tracks[i].language === caption
+          ? "showing"
+          : "disabled";
     }
   };
 
-  /*
-   * Mute / Unmute
-   */
+  useEffect(syncCaptions, [caption, source, reload]);
+
+  const togglePlay = () => {
+    const v = video();
+    if (!v) return;
+
+    if (v.paused) {
+      void v.play().catch(() => setPlaying(false));
+    } else {
+      v.pause();
+    }
+  };
+
+  const seek = (seconds: number) => {
+    const v = video();
+
+    if (!v || !Number.isFinite(v.duration)) return;
+
+    v.currentTime = clamp(seconds, 0, v.duration);
+    setTime(v.currentTime);
+  };
+
+  const changeVolume = (value: number) => {
+    const v = video();
+    if (!v) return;
+
+    v.volume = clamp(value, 0, 1);
+    v.muted = v.volume === 0;
+
+    setVolume(v.volume);
+    setMuted(v.muted);
+  };
+
   const toggleMute = () => {
-    const video = videoRef.current;
+    const v = video();
+    if (!v) return;
 
-    if (!video) return;
-
-    video.muted = !video.muted;
-
-    setMuted(video.muted);
+    v.muted = !v.muted;
+    setMuted(v.muted);
   };
 
-  /*
-   * Seek
-   */
-  const seekTo = (time: number) => {
-    const video = videoRef.current;
+  const changeSpeed = (value: number) => {
+    const v = video();
+    if (v) v.playbackRate = value;
 
-    if (
-      !video ||
-      !Number.isFinite(video.duration)
-    ) {
-      return;
-    }
-
-    const nextTime = Math.min(
-      video.duration,
-      Math.max(0, time)
-    );
-
-    video.currentTime = nextTime;
-
-    setCurrentTime(nextTime);
+    setSpeed(value);
+    setMenu(null);
   };
 
-  /*
-   * Progress bar click
-   */
-  const handleSeek = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    if (!duration) return;
+  const toggleFullscreen = () => {
+    const root = rootRef.current;
+    if (!root) return;
 
-    const rect =
-      event.currentTarget.getBoundingClientRect();
-
-    const percentage = Math.min(
-      1,
-      Math.max(
-        0,
-        (event.clientX - rect.left) /
-          rect.width
-      )
-    );
-
-    seekTo(
-      percentage * duration
-    );
-  };
-
-  /*
-   * Keyboard progress control
-   */
-  const handleProgressKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>
-  ) => {
-    if (!duration) return;
-
-    switch (event.key) {
-      case "ArrowRight":
-        event.preventDefault();
-
-        seekTo(
-          currentTime + 5
-        );
-
-        break;
-
-      case "ArrowLeft":
-        event.preventDefault();
-
-        seekTo(
-          currentTime - 5
-        );
-
-        break;
-
-      case "Home":
-        event.preventDefault();
-
-        seekTo(0);
-
-        break;
-
-      case "End":
-        event.preventDefault();
-
-        seekTo(duration);
-
-        break;
+    if (document.fullscreenElement === root) {
+      void document.exitFullscreen().catch(() => {});
+    } else if (!document.fullscreenElement) {
+      void root.requestFullscreen().catch(() => {});
     }
   };
 
-  /*
-   * Seek feedback
-   */
-  const showSeekFeedback = (
-    type: "rewind" | "forward"
+  const switchSource = (
+    nextSrc: string,
+    label: string,
+    type: "quality" | "audio"
   ) => {
-    setSeekFeedback(type);
+    const v = video();
+    if (!v) return;
 
-    if (feedbackTimerRef.current) {
-      window.clearTimeout(
-        feedbackTimerRef.current
-      );
-    }
+    setMenu(null);
 
-    feedbackTimerRef.current =
-      window.setTimeout(() => {
-        setSeekFeedback(null);
-      }, 700);
-  };
+    if (nextSrc === source) return;
 
-  /*
-   * Double click:
-   * left = rewind 10 seconds
-   * right = forward 10 seconds
-   */
-  const handleDoubleClick = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    const rect =
-      event.currentTarget.getBoundingClientRect();
-
-    const clickX =
-      event.clientX - rect.left;
-
-    if (
-      clickX <
-      rect.width / 3
-    ) {
-      seekTo(
-        currentTime - 10
-      );
-
-      showSeekFeedback(
-        "rewind"
-      );
-    } else if (
-      clickX >
-      (rect.width * 2) / 3
-    ) {
-      seekTo(
-        currentTime + 10
-      );
-
-      showSeekFeedback(
-        "forward"
-      );
-    }
-  };
-
-  /*
-   * Video click:
-   * center area = play / pause
-   */
-  const handleVideoClick = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    const rect =
-      event.currentTarget.getBoundingClientRect();
-
-    const clickX =
-      event.clientX - rect.left;
-
-    if (
-      clickX > rect.width / 3 &&
-      clickX <
-        (rect.width * 2) / 3
-    ) {
-      void togglePlay();
-    }
-  };
-
-  /*
-   * Fullscreen
-   */
-  const toggleFullscreen = async () => {
-    const container =
-      containerRef.current;
-
-    if (!container) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await container.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {
-      // Browser may block fullscreen.
-    }
-  };
-
-  /*
-   * Playback speed
-   */
-  const changeSpeed = (
-    value: number
-  ) => {
-    const video = videoRef.current;
-
-    if (!video) return;
-
-    video.playbackRate = value;
-
-    setPlaybackRate(value);
-
-    setOpenMenu("main");
-  };
-
-  /*
-   * Quality / language source change
-   */
-  const changeSource = (
-    value: string,
-    items:
-      | VideoQuality[]
-      | VideoLanguage[],
-    setValue: (
-      value: string
-    ) => void
-  ) => {
-    const video = videoRef.current;
-
-    const item = items.find(
-      (entry) =>
-        entry.label === value
-    );
-
-    if (!video || !item) {
-      return;
-    }
-
-    const savedTime =
-      video.currentTime;
-
-    const wasPlaying =
-      !video.paused;
-
-    setValue(value);
-
-    video.src = item.src;
-
-    const restorePlayback = () => {
-      if (
-        Number.isFinite(
-          video.duration
-        )
-      ) {
-        video.currentTime =
-          Math.min(
-            savedTime,
-            video.duration
-          );
-      }
-
-      if (wasPlaying) {
-        void video.play();
-      }
+    pendingSource.current = {
+      time: v.currentTime,
+      shouldPlay: !v.paused && !v.ended,
     };
 
-    video.addEventListener(
-      "loadedmetadata",
-      restorePlayback,
-      {
-        once: true,
+    // These props represent alternative complete media files.
+    // Changing one resets the other source selection.
+    if (type === "quality") {
+      setQuality(label);
+      setAudio("");
+    } else {
+      setAudio(label);
+      setQuality("");
+    }
+
+    setError(false);
+    setBuffering(true);
+    setSource(nextSrc);
+  };
+
+  const onMetadata = () => {
+    const v = video();
+    if (!v) return;
+
+    const validDuration = Number.isFinite(v.duration) ? v.duration : 0;
+
+    setDuration(validDuration);
+    v.playbackRate = speed;
+
+    const pending = pendingSource.current;
+    pendingSource.current = null;
+
+    if (pending) {
+      seek(pending.time);
+
+      if (pending.shouldPlay) {
+        void v.play().catch(() => setPlaying(false));
       }
-    );
 
-    video.load();
+      return;
+    }
 
-    setOpenMenu("main");
+    if (!initialized.current) {
+      initialized.current = true;
+
+      if (initialPosition > 0 && validDuration > 0) {
+        seek(Math.min(initialPosition, validDuration));
+      }
+    }
   };
 
-  /*
-   * Captions
-   */
-  const changeCaption = (
-    language: string | "off"
-  ) => {
-    const video = videoRef.current;
+  const onKeyboard = (event: KeyboardEvent<HTMLElement>) => {
+    const v = video();
+    if (!v || error || unavailable) return;
 
-    if (!video) return;
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
 
-    Array.from(
-      video.textTracks
-    ).forEach((track) => {
-      track.mode =
-        language === "off"
-          ? "disabled"
-          : track.language ===
-              language
-            ? "showing"
-            : "disabled";
-    });
+    const target = event.target;
 
-    setSelectedCaption(
-      language
-    );
+    // Do not interfere with native controls or focused settings.
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLTextAreaElement
+    ) {
+      return;
+    }
 
-    setOpenMenu("main");
+    if (
+      target instanceof HTMLButtonElement &&
+      (event.key === " " || event.key === "Enter")
+    ) {
+      return;
+    }
+
+    if (event.key === "Escape" && menu) {
+      setMenu(null);
+      event.stopPropagation();
+      return;
+    }
+
+    const key =
+      event.key.length === 1
+        ? event.key.toLowerCase()
+        : event.key;
+
+    const actions: Record<string, () => void> = {
+      " ": togglePlay,
+      k: togglePlay,
+
+      ArrowLeft: () => seek(v.currentTime - 5),
+      ArrowRight: () => seek(v.currentTime + 5),
+
+      j: () => seek(v.currentTime - 10),
+      l: () => seek(v.currentTime + 10),
+
+      ArrowUp: () => changeVolume(v.volume + 0.05),
+      ArrowDown: () => changeVolume(v.volume - 0.05),
+
+      m: toggleMute,
+      f: toggleFullscreen,
+
+      Home: () => seek(0),
+      End: () => seek(v.duration),
+    };
+
+    const action =
+      actions[key] ??
+      (/^[0-9]$/.test(key)
+        ? () => seek((v.duration * Number(key)) / 10)
+        : undefined);
+
+    if (!action) return;
+
+    event.preventDefault();
+    action();
   };
 
-  const progress =
-    duration > 0
-      ? Math.min(
-          100,
-          Math.max(
-            0,
-            (currentTime /
-              duration) *
-              100
-          )
-        )
-      : 0;
+  const retry = () => {
+    pendingSource.current = null;
+    setSource(src);
+    setQuality("");
+    setAudio("");
+    setError(false);
+    setBuffering(true);
+    setReload((value) => value + 1);
+  };
 
-  /*
-   * Unavailable state
-   */
-  if (unavailable) {
+  if (unavailable || !src) {
     return (
       <div
         role="status"
-        aria-label={`${title} unavailable`}
-        className={`flex aspect-video w-full items-center justify-center rounded-lg border border-border bg-muted p-6 text-center ${className}`}
+        className={`flex aspect-video items-center justify-center
+          rounded-lg bg-black p-4 text-white ${className}`}
       >
-        <div>
-          <h2 className="text-lg font-semibold text-text">
-            Video unavailable
-          </h2>
-
-          <p className="mt-2 text-sm text-muted-foreground">
-            This video is currently unavailable.
-          </p>
-        </div>
+        Video unavailable
       </div>
     );
   }
 
   return (
     <section
-      ref={containerRef}
-      aria-label={title}
-      className={`relative w-full overflow-hidden rounded-lg bg-black ${className}`}
+      ref={rootRef}
+      role="region"
+      tabIndex={0}
+      aria-label={`${title} video player`}
+      onKeyDownCapture={onKeyboard}
+      className={`relative isolate aspect-video w-full overflow-hidden
+        rounded-lg bg-black text-white
+        focus-visible:outline focus-visible:outline-2
+        fullscreen:h-screen fullscreen:w-screen
+        fullscreen:aspect-auto fullscreen:rounded-none
+        ${className}`}
     >
-      <div
-        className="relative aspect-video w-full bg-black"
-        onClick={handleVideoClick}
-        onDoubleClick={handleDoubleClick}
-      >
-        <video
-          ref={videoRef}
-          src={src}
-          poster={poster}
-          playsInline
-          preload="metadata"
-          aria-label={title}
-          className="h-full w-full cursor-pointer object-contain"
-        >
-          {captions.map(
-            (caption) => (
-              <track
-                key={`${caption.srcLang}-${caption.label}`}
-                kind="captions"
-                src={caption.src}
-                srcLang={
-                  caption.srcLang
-                }
-                label={
-                  caption.label
-                }
-                default={
-                  caption.default
-                }
-              />
-            )
-          )}
+      <video
+        key={`${source}-${reload}`}
+        ref={videoRef}
+        src={source}
+        poster={poster}
+        playsInline
+        preload="metadata"
+        tabIndex={-1}
+        aria-label={title}
+        className="absolute inset-0 h-full w-full cursor-pointer object-contain"
+        onClick={() => {
+          rootRef.current?.focus();
+          togglePlay();
+        }}
+        onLoadedMetadata={onMetadata}
+        onLoadedData={syncCaptions}
+        onWaiting={() => setBuffering(true)}
+        onCanPlay={() => setBuffering(false)}
+        onPlaying={() => {
+          setPlaying(true);
+          setBuffering(false);
+        }}
+        onPause={() => setPlaying(false)}
+        onTimeUpdate={(event) => {
+          const v = event.currentTarget;
 
-          Your browser does not
-          support the video element.
-        </video>
+          setTime(v.currentTime);
 
-        {seekFeedback ===
-          "rewind" && (
-          <SeekFeedback
-            side="left"
-            text="« 10"
-          />
-        )}
-
-        {seekFeedback ===
-          "forward" && (
-          <SeekFeedback
-            side="right"
-            text="10 »"
-          />
-        )}
-
-        <ProgressBar
-          duration={duration}
-          currentTime={currentTime}
-          progress={progress}
-          onSeek={handleSeek}
-          onKeyDown={
-            handleProgressKeyDown
+          if (Number.isFinite(v.duration)) {
+            onProgress?.(v.currentTime, v.duration);
           }
-        />
-
-        <div
-          className="absolute bottom-0 left-0 right-0 z-30 flex h-12 items-center gap-2 bg-black/80 px-3 text-white"
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-          <ControlButton
-            label={
-              playing
-                ? "Pause video"
-                : "Play video"
-            }
-            onClick={() => {
-              void togglePlay();
-            }}
-          >
-            {playing
-              ? "❚❚"
-              : "▶"}
-          </ControlButton>
-
-          <ControlButton
-            label={
-              muted
-                ? "Unmute video"
-                : "Mute video"
-            }
-            onClick={
-              toggleMute
-            }
-          >
-            {muted
-              ? "🔇"
-              : "🔊"}
-          </ControlButton>
-
-          <span
-            aria-label="Video time"
-            className="min-w-[100px] text-sm"
-          >
-            {formatTime(
-              currentTime
-            )}{" "}
-            /{" "}
-            {formatTime(
-              duration
-            )}
-          </span>
-
-          <div className="flex-1" />
-
-          {captions.length >
-            0 && (
-            <ControlButton
-              label="Captions"
-              expanded={
-                openMenu ===
-                "captions"
-              }
-              onClick={() => {
-                setOpenMenu(
-                  openMenu ===
-                    "captions"
-                    ? null
-                    : "captions"
-                );
-              }}
-            >
-              CC
-            </ControlButton>
-          )}
-
-          <ControlButton
-            label="Player settings"
-            expanded={
-              openMenu === "main"
-            }
-            onClick={() => {
-              setOpenMenu(
-                openMenu ===
-                  "main"
-                  ? null
-                  : "main"
-              );
-            }}
-          >
-            ⚙
-          </ControlButton>
-
-          {qualities.length >
-            0 && (
-            <ControlButton
-              label="Video quality"
-              onClick={() => {
-                setOpenMenu(
-                  openMenu ===
-                    "quality"
-                    ? null
-                    : "quality"
-                );
-              }}
-            >
-              HD
-            </ControlButton>
-          )}
-
-          <ControlButton
-            label={
-              isFullscreen
-                ? "Exit fullscreen"
-                : "Enter fullscreen"
-            }
-            onClick={() => {
-              void toggleFullscreen();
-            }}
-          >
-            {isFullscreen
-              ? "🡼"
-              : "⛶"}
-          </ControlButton>
-        </div>
-
-        {openMenu && (
-          <SettingsMenu
-            menu={openMenu}
-            playbackRate={
-              playbackRate
-            }
-            selectedQuality={
-              selectedQuality
-            }
-            selectedLanguage={
-              selectedLanguage
-            }
-            selectedCaption={
-              selectedCaption
-            }
-            qualities={
-              qualities
-            }
-            languages={
-              languages
-            }
-            captions={
-              captions
-            }
-            onMenuChange={
-              setOpenMenu
-            }
-            onSpeedChange={
-              changeSpeed
-            }
-            onQualityChange={(
-              value
-            ) => {
-              changeSource(
-                value,
-                qualities,
-                setSelectedQuality
-              );
-            }}
-            onLanguageChange={(
-              value
-            ) => {
-              changeSource(
-                value,
-                languages,
-                setSelectedLanguage
-              );
-            }}
-            onCaptionChange={
-              changeCaption
-            }
+        }}
+        onPlay={(event) => {
+          if (!resumed.current && initialPosition > 0) {
+            resumed.current = true;
+            onResume?.(event.currentTarget.currentTime);
+          }
+        }}
+        onEnded={() => {
+          setPlaying(false);
+          onComplete?.();
+        }}
+        onVolumeChange={(event) => {
+          setVolume(event.currentTarget.volume);
+          setMuted(event.currentTarget.muted);
+        }}
+        onError={() => {
+          setError(true);
+          setBuffering(false);
+        }}
+      >
+        {captions.map((item) => (
+          <track
+            key={`${item.srcLang}-${item.src}`}
+            kind="captions"
+            src={item.src}
+            srcLang={item.srcLang}
+            label={item.label}
+            default={item.default}
+            onLoad={syncCaptions}
           />
-        )}
-      </div>
+        ))}
+      </video>
+
+      {buffering && !error && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none absolute inset-0 z-10
+            flex items-center justify-center"
+        >
+          <span className="rounded bg-black/70 px-3 py-2 text-sm">
+            Loading…
+          </span>
+        </div>
+      )}
+
+      {error && (
+        <div
+          role="alert"
+          className="absolute inset-0 z-40 flex flex-col
+            items-center justify-center gap-3 bg-black p-4"
+        >
+          <p>Unable to play this video.</p>
+
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={retry}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* SETTINGS */}
+      {menu && !error && (
+        <div
+          aria-label="Playback settings"
+          className="absolute bottom-16 right-2 z-30 max-h-[65%]
+            w-52 overflow-y-auto rounded bg-zinc-900
+            p-2 text-sm shadow-xl"
+        >
+          <div className="mb-2 flex items-center justify-between">
+            <button
+              type="button"
+              className={buttonClass}
+              onClick={() =>
+                setMenu(menu === "main" ? null : "main")
+              }
+            >
+              {menu === "main" ? "Settings" : "← Back"}
+            </button>
+
+            <button
+              type="button"
+              aria-label="Close settings"
+              className={buttonClass}
+              onClick={() => setMenu(null)}
+            >
+              ✕
+            </button>
+          </div>
+
+          {menu === "main" && (
+            <div className="grid gap-1 text-left">
+              <button className={buttonClass} onClick={() => setMenu("speed")}>
+                Speed · {speed}×
+              </button>
+
+              {captions.length > 0 && (
+                <button className={buttonClass} onClick={() => setMenu("captions")}>
+                  Captions · {caption}
+                </button>
+              )}
+
+              {qualities.length > 0 && (
+                <button className={buttonClass} onClick={() => setMenu("quality")}>
+                  Quality · {quality || "Original"}
+                </button>
+              )}
+
+              {languages.length > 0 && (
+                <button className={buttonClass} onClick={() => setMenu("audio")}>
+                  Audio · {audio || "Original"}
+                </button>
+              )}
+            </div>
+          )}
+
+          {menu === "speed" && (
+            <select
+              aria-label="Playback speed"
+              value={speed}
+              onChange={(e) => changeSpeed(Number(e.target.value))}
+              className="w-full rounded bg-zinc-800 p-2"
+            >
+              {PLAYBACK_SPEEDS.map((value) => (
+                <option key={value} value={value}>
+                  {value === 1 ? "Normal" : `${value}×`}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {menu === "captions" && (
+            <select
+              aria-label="Captions"
+              value={caption}
+              onChange={(e) => {
+                setCaption(e.target.value);
+                setMenu(null);
+              }}
+              className="w-full rounded bg-zinc-800 p-2"
+            >
+              <option value="off">Off</option>
+              {captions.map((item) => (
+                <option key={item.src} value={item.srcLang}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {menu === "quality" && (
+            <select
+              aria-label="Video quality"
+              value={quality}
+              onChange={(e) => {
+                const item = qualities.find(
+                  (option) => option.label === e.target.value
+                );
+                if (item) switchSource(item.src, item.label, "quality");
+              }}
+              className="w-full rounded bg-zinc-800 p-2"
+            >
+              <option value="" disabled>Select quality</option>
+              {qualities.map((item) => (
+                <option key={item.label} value={item.label}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {menu === "audio" && (
+            <select
+              aria-label="Audio language"
+              value={audio}
+              onChange={(e) => {
+                const item = languages.find(
+                  (option) => option.label === e.target.value
+                );
+                if (item) switchSource(item.src, item.label, "audio");
+              }}
+              className="w-full rounded bg-zinc-800 p-2"
+            >
+              <option value="" disabled>Select audio</option>
+              {languages.map((item) => (
+                <option key={item.label} value={item.label}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
+
+      {/* ALWAYS-AVAILABLE BOTTOM TOOLBAR */}
+      {!error && (
+        <div
+          role="group"
+          aria-label="Video controls"
+          className="absolute inset-x-0 bottom-0 z-20
+            bg-gradient-to-t from-black via-black/80
+            to-transparent px-2 pb-2 pt-8 sm:px-4 sm:pb-3"
+        >
+          <input
+            type="range"
+            aria-label="Video progress"
+            aria-valuetext={`${formatTime(time)} of ${formatTime(duration)}`}
+            min={0}
+            max={duration || 1}
+            step={5}
+            value={Math.min(time, duration || 1)}
+            disabled={!duration}
+            onChange={(e) => seek(Number(e.target.value))}
+            className="mb-2 block h-2 w-full cursor-pointer
+              accent-red-600 disabled:opacity-50"
+          />
+
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+            <button
+              type="button"
+              className={buttonClass}
+              aria-label={playing ? "Pause" : "Play"}
+              onClick={togglePlay}
+            >
+              {playing ? "❚❚" : "▶"}
+            </button>
+
+            <button
+              type="button"
+              className={buttonClass}
+              aria-label={muted ? "Unmute" : "Mute"}
+              onClick={toggleMute}
+            >
+              {muted || volume === 0 ? "🔇" : "🔊"}
+            </button>
+
+            <input
+              type="range"
+              aria-label="Volume"
+              min={0}
+              max={1}
+              step={0.05}
+              value={muted ? 0 : volume}
+              onChange={(e) => changeVolume(Number(e.target.value))}
+              className="w-12 min-w-0 cursor-pointer
+                accent-white sm:w-20"
+            />
+
+            <span className="whitespace-nowrap text-[11px] tabular-nums sm:text-xs">
+              {formatTime(time)} / {formatTime(duration)}
+            </span>
+
+            <div className="min-w-0 flex-1" />
+
+            <button
+              type="button"
+              className={buttonClass}
+              aria-label="Settings"
+              aria-expanded={menu !== null}
+              onClick={() => setMenu(menu ? null : "main")}
+            >
+              ⚙
+            </button>
+
+            <button
+              type="button"
+              className={buttonClass}
+              aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              onClick={toggleFullscreen}
+            >
+              ⛶
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
-};
-
-VideoPlayerContainer.displayName =
-  "VideoPlayerContainer";
+}

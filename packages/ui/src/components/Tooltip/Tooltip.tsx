@@ -1,4 +1,4 @@
-import {cloneElement,useEffect,useId,useState,
+import {cloneElement,useEffect,useId,useState,useRef,
   type FocusEvent,
   type HTMLAttributes,
   type MouseEvent,
@@ -13,6 +13,7 @@ export type TooltipSide = "top" | "right" | "bottom" | "left";
 export interface TooltipProps {
   content: ReactNode;
   side?: TooltipSide;
+  delayMs?: number;
   children: ReactElement<HTMLAttributes<HTMLElement>>;
   className?: string;
 }
@@ -27,12 +28,116 @@ const sideClasses: Record<TooltipSide, string> = {
 export function Tooltip({
   content,
   side = "top",
+  delayMs = 300,
   children,
   className,
 }: TooltipProps) {
   const [open, setOpen] = useState(false);
+  const [resolvedSide, setResolvedSide] = useState<TooltipSide>(side);
 
   const tooltipId = useId();
+
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+  null,
+  );
+
+  const clearOpenTimer = () => {
+  if (openTimerRef.current) {
+    clearTimeout(openTimerRef.current);
+    openTimerRef.current = null;
+  }
+  };
+
+  const openWithDelay = () => {
+    clearOpenTimer();
+
+    if (delayMs <= 0) {
+      setOpen(true);
+      return;
+    }
+
+    openTimerRef.current = setTimeout(() => {
+      setOpen(true);
+      openTimerRef.current = null;
+    }, delayMs);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (openTimerRef.current) {
+        clearTimeout(openTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+  if (!open) {
+    return;
+  }
+
+  const updatePosition = () => {
+    const triggerElement = triggerRef.current;
+    const tooltipElement = tooltipRef.current;
+
+    if (!triggerElement || !tooltipElement) {
+      return;
+    }
+
+    const triggerRect = triggerElement.getBoundingClientRect();
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+
+    const gap = 8;
+
+    const availableSpace = {
+      top: triggerRect.top,
+      right: window.innerWidth - triggerRect.right,
+      bottom: window.innerHeight - triggerRect.bottom,
+      left: triggerRect.left,
+    };
+
+    const requiredSpace = {
+      top: tooltipRect.height + gap,
+      right: tooltipRect.width + gap,
+      bottom: tooltipRect.height + gap,
+      left: tooltipRect.width + gap,
+    };
+
+    const oppositeSide: Record<TooltipSide, TooltipSide> = {
+      top: "bottom",
+      right: "left",
+      bottom: "top",
+      left: "right",
+    };
+
+    if (availableSpace[side] >= requiredSpace[side]) {
+      setResolvedSide(side);
+      return;
+    }
+
+    const opposite = oppositeSide[side];
+
+    if (availableSpace[opposite] >= requiredSpace[opposite]) {
+      setResolvedSide(opposite);
+      return;
+    }
+
+    setResolvedSide(side);
+    };
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, side]);
 
   useEffect(() => {
     if (!open) {
@@ -56,7 +161,7 @@ export function Tooltip({
   const handleMouseEnter = (
     event: MouseEvent<HTMLElement>,
   ) => {
-    setOpen(true);
+    openWithDelay();
 
     children.props.onMouseEnter?.(event);
   };
@@ -64,6 +169,7 @@ export function Tooltip({
   const handleMouseLeave = (
     event: MouseEvent<HTMLElement>,
   ) => {
+    clearOpenTimer();
     setOpen(false);
 
     children.props.onMouseLeave?.(event);
@@ -72,6 +178,7 @@ export function Tooltip({
   const handleFocus = (
     event: FocusEvent<HTMLElement>,
   ) => {
+    clearOpenTimer();
     setOpen(true);
 
     children.props.onFocus?.(event);
@@ -80,6 +187,7 @@ export function Tooltip({
   const handleBlur = (
     event: FocusEvent<HTMLElement>,
   ) => {
+    clearOpenTimer();
     setOpen(false);
 
     children.props.onBlur?.(event);
@@ -94,20 +202,24 @@ export function Tooltip({
   });
 
   return (
-    <span className="relative inline-flex">
+    <span
+      ref={triggerRef}
+      className="relative inline-flex"
+    >
       {trigger}
 
       {open && (
         <div
+          ref={tooltipRef}
           id={tooltipId}
           role="tooltip"
           className={cn(
             "pointer-events-none absolute z-50",
-            "whitespace-nowrap rounded-md",
+            "w-max max-w-xs whitespace-normal break-words rounded-md",
             "bg-text px-3 py-2",
             "text-xs font-medium text-surface",
             "shadow-md",
-            sideClasses[side],
+            sideClasses[resolvedSide],
             className,
           )}
         >
