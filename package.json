@@ -9,7 +9,10 @@
   "scripts": {
     "storybook": "npm run storybook --workspace=@edtech/ui"
   },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.62.2"
-  }
+"dependencies": {
+  "react-icons": "^5.7.0"
+},
+"optionalDependencies": {
+  "@rollup/rollup-linux-x64-gnu": "^4.62.2"
+}
 }
