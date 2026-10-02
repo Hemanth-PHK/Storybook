@@ -37,11 +37,16 @@ export * from "./components/ThemeSwitcher";
   
    ========================================================================= */
 export * from "./components/ConfirmationDialog";
+export * from "./components/Tabs";
+export * from "./components/Accordion";
+export * from "./components/Breadcrumb";
+export * from "./components/Table";
+export * from "./components/Pagination";
 export {
   VideoPlayerContainer,
   type VideoPlayerContainerProps,
-  type VideoCaption,
-  type VideoQuality,
-  type VideoLanguage,
+  type CaptionOption as VideoCaption,
+  type MediaOption as VideoQuality,
+  type MediaOption as VideoLanguage,
 } from "./components/VideoPlayerContainer";
 
