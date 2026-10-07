@@ -13,7 +13,10 @@ export * from "./components/Skeleton";
 // Components — Button is your reference (already built). ThemeSwitcher is foundation.
 export * from "./components/Button";
 export * from "./components/ThemeSwitcher";
- export * from "./components/Nav";
+export * from "./components/Nav";
+export * from "./components/Avatar";
+export * from "./components/ProgressBar";
+export * from "./components/EmptyState";
 
 /* ============================================================================
    YOUR COMPONENTS TO BUILD
