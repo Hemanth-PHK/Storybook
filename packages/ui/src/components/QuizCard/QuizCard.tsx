@@ -37,9 +37,9 @@ export function QuizCard({
   const validationId = `${id}-validation`;
 
   return (
-    <div className={cn("rounded-lg border border-border bg-surface p-6 text-text", className)}>
-      <fieldset disabled={disabled} aria-describedby={validationMessage ? validationId : undefined}>
-        <legend className="mb-4 text-lg font-semibold">{question}</legend>
+    <div className={cn("rounded-lg border border-border bg-surface min-w-0 [overflow-wrap:anywhere] p-4 sm:p-6 text-text", className)}>
+      <fieldset className="min-w-0" disabled={disabled} aria-describedby={validationMessage ? validationId : undefined}>
+        <legend className="mb-4 max-w-full text-lg font-semibold">{question}</legend>
         <div className="space-y-2">
           {options.map((option) => (
             <label
@@ -59,9 +59,9 @@ export function QuizCard({
                 onChange={() => onOptionChange(option.id)}
                 disabled={option.disabled}
                 aria-invalid={validationMessage ? true : undefined}
-                className="accent-primary"
+                className="shrink-0 accent-primary"
               />
-              <span>{option.label}</span>
+              <span className="min-w-0">{option.label}</span>
             </label>
           ))}
         </div>

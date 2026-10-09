@@ -21,7 +21,7 @@ export function ErrorState({
     <section
       role="alert"
       className={cn(
-        "rounded-lg border border-border bg-surface p-6 text-text",
+        "rounded-lg border border-border bg-surface min-w-0 [overflow-wrap:anywhere] p-4 sm:p-6 text-text",
         className,
       )}
     >

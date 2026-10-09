@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 
 // A self-contained illustration keeps this example independent of external hosts.
 const imageSrc = `data:image/svg+xml,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" fill="#e5e7eb"/><circle cx="48" cy="34" r="17" fill="#475569"/><path d="M15 96v-9a33 33 0 0 1 66 0v9" fill="#475569"/></svg>',
+  '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" fill="none"/><circle cx="48" cy="34" r="17" fill="currentColor"/><path d="M15 96v-9a33 33 0 0 1 66 0v9" fill="currentColor"/></svg>',
 )}`;
 
 const meta = {
@@ -33,3 +33,8 @@ export const AllSizes: Story = {
     </div>
   ),
 };
+
+export const LongName: Story = { args: { name: "Alexandria Very Long Learner Name", alt: "Alexandria Very Long Learner Name" } };
+export const Decorative: Story = { args: { alt: "" } };
+export const BlankName: Story = { args: { name: " ", alt: "Learner profile" } };
+export const ProfileHeader: Story = { render: args => <div className="flex items-center gap-3"><Avatar {...args} /><span className="min-w-0 [overflow-wrap:anywhere]">Alexandria Very Long Learner Name</span></div> };

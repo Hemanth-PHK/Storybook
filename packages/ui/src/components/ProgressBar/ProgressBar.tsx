@@ -16,11 +16,11 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(function
   const progress = Number.isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
 
   return (
-    <div ref={ref} className={cn("w-full text-text", className)}>
+    <div ref={ref} className={cn("w-full min-w-0 [overflow-wrap:anywhere] text-text", className)}>
       {(label || showValue) && (
         <div className="mb-2 flex items-center justify-between gap-3 text-sm">
           {label && <span id={labelId}>{label}</span>}
-          {showValue && <span aria-hidden="true" className="ml-auto text-muted">{progress}%</span>}
+          {showValue && <span aria-hidden="true" className="ml-auto shrink-0 text-muted">{progress}%</span>}
         </div>
       )}
       <div
@@ -33,7 +33,7 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(function
         className="h-2 w-full overflow-hidden rounded-full bg-surface-hover"
       >
         <div
-          className={cn("h-full rounded-full", progress === 100 ? "bg-success" : "bg-primary")}
+          className={cn("h-full rounded-full motion-safe:transition-[width] motion-safe:duration-300", progress === 100 ? "bg-success" : "bg-primary")}
           style={{ width: `${progress}%` }}
         />
       </div>
