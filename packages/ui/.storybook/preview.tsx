@@ -17,6 +17,14 @@ import "../src/tokens/index.css";
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        method: "alphabetical",
+        locales: "en-US",
+        // Sort categories/components, retaining each component's authored story order.
+        includeNames: false,
+      },
+    },
     controls: {
       matchers: { color: /(background|color)$/i, date: /Date$/i },
     },
