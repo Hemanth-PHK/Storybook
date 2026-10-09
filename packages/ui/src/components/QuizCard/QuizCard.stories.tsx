@@ -31,13 +31,49 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const AnswerSelected: Story = { args: { selectedOptionId: "button" } };
-export const ValidationError: Story = { args: { validationMessage: "Select an answer to continue." } };
-export const CorrectFeedback: Story = {
-  args: { selectedOptionId: "button", feedback: <p className="text-success">Correct answer</p>, nextAction: <Button type="button" className="bg-primary text-on-primary">Next question</Button> },
-};
-export const IncorrectFeedback: Story = {
-  args: { selectedOptionId: "section", feedback: <p className="text-danger">Try again</p> },
-};
+// Assessment state belongs to the parent. This is a local demo response, not scoring in QuizCard.
+function AssessmentExample(args: QuizCardProps) {
+  const [selected, setSelected] = useState<string>();
+  const [validation, setValidation] = useState<string>();
+  const [status, setStatus] = useState<"correct" | "incorrect">();
+  const [loading, setLoading] = useState(false);
+  const pending = useRef(false);
+  const retryRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const submit = async () => {
+    if (pending.current || status || args.disabled) return;
+    if (!selected) {
+      setValidation("Select an answer to continue.");
+      cardRef.current?.querySelector<HTMLInputElement>("input:not(:disabled)")?.focus();
+      return;
+    }
+    pending.current = true;
+    setLoading(true);
+    // Simulates an assessment response; the correct answer is not passed to QuizCard.
+    await new Promise(resolve => setTimeout(resolve, 600));
+    setStatus(selected === "button" ? "correct" : "incorrect");
+    setLoading(false);
+    pending.current = false;
+  };
+  useEffect(() => {
+    if (status === "incorrect") retryRef.current?.focus();
+  }, [status]);
+  return <div ref={cardRef}><QuizCard {...args} selectedOptionId={selected}
+    onOptionChange={optionId => { setSelected(optionId); setValidation(undefined); args.onOptionChange(optionId); }}
+    validationMessage={validation} answerStatus={status} disabled={args.disabled || loading || !!status}
+    feedback={loading ? "Submitting answer..." : status === "incorrect" ? "Incorrect answer. Try again." : status === "correct" ? "Correct answer." : undefined}
+    explanation={status === "correct" ? "A button is an interactive form control." : undefined}
+    nextAction={status === "incorrect" ? <Button ref={retryRef} type="button" className="bg-primary text-on-primary" onClick={() => {
+      setStatus(undefined);
+      // Preserve the previous answer so learners can review and change it.
+      requestAnimationFrame(() => cardRef.current?.querySelector<HTMLInputElement>("input:checked")?.focus());
+    }}>Retry</Button> : <Button type="button" className="bg-primary text-on-primary" loading={loading}
+      disabled={args.disabled || status === "correct"} onClick={submit}>{status === "correct" ? "Answer finalized" : "Submit answer"}</Button>}
+  /></div>;
+}
+export const ValidationError: Story = { render: args => <AssessmentExample {...args} /> };
+export const CorrectFeedback: Story = { render: args => <AssessmentExample {...args} /> };
+export const IncorrectFeedback: Story = { render: args => <AssessmentExample {...args} /> };
 export const WithExplanation: Story = {
   args: { selectedOptionId: "button", explanation: "A button is an interactive form control." },
 };

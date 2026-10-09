@@ -52,7 +52,7 @@ async function main() {
     errors.length = 0;
     await send('Page.navigate', { url: `http://127.0.0.1:${port}/iframe.html?id=${id}&viewMode=story` });
     for (let i = 0; i < 150; i++) {
-      if (await evaluate(`window.__STORYBOOK_PREVIEW__?.currentRender?.id === ${JSON.stringify(id)} && document.querySelector('#storybook-root')?.children.length > 0 && !document.querySelector('.sb-errordisplay')?.checkVisibility()`)) { await sleep(80); return; }
+      if (await evaluate(`window.__STORYBOOK_PREVIEW__?.currentRender?.id === ${JSON.stringify(id)} && document.getElementById('storybook-root')?.children.length > 0 && !document.querySelector('.sb-errordisplay')?.checkVisibility()`)) { await sleep(80); return; }
       await sleep(100);
     }
     throw new Error(`Story did not render: ${id}; ${await evaluate('document.body.innerText.slice(0,3000)')}; exceptions: ${errors.join(', ')}`);
@@ -85,7 +85,38 @@ async function main() {
   await check('components-quizcard--disabled', `Array.from(document.querySelectorAll('input')).every(i=>i.matches(':disabled'))`, 'Quiz: disabled fieldset');
   await check('components-quizcard--disabled-option', `(async()=>{let i=document.querySelector('input');i.click();${tick}return i.disabled&&!i.checked})()`, 'Quiz: disabled option');
   await check('components-quizcard--submission', `(async()=>{let b=document.querySelector('button');if(!b.disabled)return false;document.querySelector('input').click();${tick}b.click();b.click();${tick}return b.disabled&&document.querySelector('[role=status]').textContent==='Answer submitted for assessment.'&&document.querySelector('input').matches(':disabled')})()`, 'Quiz: submission requires selection and locks repeated submission');
-  await check('components-quizcard--validation-error', `(()=>{let f=document.querySelector('fieldset');return document.getElementById(f.getAttribute('aria-describedby')).getAttribute('role')==='alert'&&document.querySelector('input').getAttribute('aria-invalid')==='true'})()`, 'Quiz: validation relationship');
+  await check('components-quizcard--validation-error', `(async()=>{
+    if(document.querySelector('[role=alert]'))return false;
+    document.querySelector('button').click();${tick}
+    let f=document.querySelector('fieldset'),alert=document.querySelector('[role=alert]');
+    if(alert?.textContent.trim()!=='Select an answer to continue.'||f.nextElementSibling!==alert||document.getElementById(f.getAttribute('aria-describedby'))!==alert)return false;
+    document.querySelector('input').click();${tick}
+    return !document.querySelector('[role=alert]')&&!f.hasAttribute('aria-describedby')&&!document.querySelector('input').hasAttribute('aria-invalid');
+  })()`, 'Quiz: validation appears only after submit, follows options, clears on selection');
+  await check('components-quizcard--incorrect-feedback', `(async()=>{
+    let radios=[...document.querySelectorAll('input')];radios[1].click();${tick}
+    let button=document.querySelector('button');button.click();button.click();${tick}
+    if(!button.disabled||!radios[1].matches(':disabled')||document.querySelector('[role=status]').textContent!=='Submitting answer...')return false;
+    await new Promise(r=>setTimeout(r,700));
+    let retry=document.querySelector('button');
+    if(document.querySelector('[role=status]').textContent!=='Incorrect answer. Try again.'||retry.textContent!=='Retry'||!radios[1].checked||!radios[1].closest('label').classList.contains('border-danger')||!radios[1].closest('label').textContent.includes('Incorrect')||document.getElementById('storybook-root').textContent.includes('interactive form control'))return false;
+    retry.click();${tick}
+    if(!radios[1].checked||radios[1].matches(':disabled')||document.querySelector('[role=status]'))return false;
+    radios[0].click();${tick}document.querySelector('button').click();
+    await new Promise(r=>setTimeout(r,700));
+    return document.querySelector('[role=status]').textContent==='Correct answer.'&&radios[0].closest('label').classList.contains('border-success')&&document.querySelector('button').disabled&&document.getElementById('storybook-root').textContent.includes('A button is an interactive form control.');
+  })()`, 'Quiz: pending lock, incorrect retained/highlighted, retry, correct finalization and gated explanation');
+  await check('components-quizcard--correct-feedback', `(async()=>{document.querySelector('input').focus();return !document.querySelector('[role=status]')})()`, 'Quiz: correct feedback initially hidden, keyboard focus');
+  await send('Input.dispatchKeyEvent', { type:'keyDown', key:' ', code:'Space', text:' ', windowsVirtualKeyCode:32 });
+  await send('Input.dispatchKeyEvent', { type:'keyUp', key:' ', code:'Space', windowsVirtualKeyCode:32 });
+  await sleep(60);
+  assert(await evaluate(`document.querySelector('#storybook-root input').checked`));
+  await evaluate(`document.querySelector('#storybook-root button').focus()`);
+  await send('Input.dispatchKeyEvent', { type:'keyDown', key:'Enter', code:'Enter', text:'\r', windowsVirtualKeyCode:13 });
+  await send('Input.dispatchKeyEvent', { type:'keyUp', key:'Enter', code:'Enter', windowsVirtualKeyCode:13 });
+  await sleep(750);
+  assert(await evaluate(`document.querySelector('#storybook-root [role=status]').textContent==='Correct answer.'&&document.querySelector('#storybook-root button').disabled`));
+  results.push('Quiz: real Space selection and Enter submission finalize answer');
   await check('components-errorstate--loading-retry', `(async()=>{let b=document.querySelector('button');b.focus();return true})()`, 'Retry: focusable action');
   await send('Input.dispatchKeyEvent', { type:'keyDown', key:'Enter', code:'Enter', text:'\r', windowsVirtualKeyCode:13 });
   await send('Input.dispatchKeyEvent', { type:'keyUp', key:'Enter', code:'Enter', windowsVirtualKeyCode:13 });
@@ -99,6 +130,16 @@ async function main() {
   await check('components-progressbar--invalid-values', `Array.from(document.querySelectorAll('[role=progressbar]')).every((e,i)=>Number(e.getAttribute('aria-valuenow'))===[0,100,0,100,0][i])`, 'Progress: invalid numeric values clamped');
   await check('components-emptystate--title-only', `(()=>{let g=document.querySelector('[role=group]');return document.getElementById(g.getAttribute('aria-labelledby')).textContent==='No courses yet'&&!g.hasAttribute('aria-describedby')})()`, 'EmptyState: optional content and accessible title');
   fs.mkdirSync(path.join(root, 'qa'), { recursive:true });
+  await send('Emulation.setDeviceMetricsOverride', { width:320, height:900, deviceScaleFactor:1, mobile:false });
+  for (const state of ['validation-error', 'incorrect-feedback', 'correct-feedback']) {
+    await open(`components-quizcard--${state}`);
+    if (state !== 'validation-error') await evaluate(`document.querySelectorAll('#storybook-root input')[${state === 'incorrect-feedback' ? 1 : 0}].click()`);
+    await sleep(60);
+    await evaluate(`document.querySelector('#storybook-root button').click()`);
+    await sleep(750);
+    const screenshot=await send('Page.captureScreenshot', {format:'png'});
+    fs.writeFileSync(path.join(root,'qa',`quizcard-${state}-320.png`), Buffer.from(screenshot.data,'base64'));
+  }
   for (const width of [320,1440]) {
     await send('Emulation.setDeviceMetricsOverride', {width,height:900,deviceScaleFactor:1,mobile:false});
     for (const component of ['errorstate','quizcard','avatar','progressbar','emptystate']) {
@@ -107,7 +148,7 @@ async function main() {
       for (const theme of ['scholar-indigo','teal-focus','warm-academy','violet-scholar','forest-growth','midnight-study']) {
         await evaluate(`document.documentElement.setAttribute('data-theme', '${theme}')`);
         await sleep(350);
-        assert(await evaluate(`(()=>{const root=document.querySelector('#storybook-root');const style=getComputedStyle(root);const probe=document.createElement('span');probe.style.color=style.getPropertyValue('--color-text');root.append(probe);const expected=getComputedStyle(probe).color;probe.remove();return style.color===expected})()`), `${component}: text follows ${theme}`);
+        assert(await evaluate(`(()=>{const root=document.getElementById('storybook-root');const style=getComputedStyle(root);const probe=document.createElement('span');probe.style.color=style.getPropertyValue('--color-text');root.append(probe);const expected=getComputedStyle(probe).color;probe.remove();return style.color===expected})()`), `${component}: text follows ${theme}`);
         if (['scholar-indigo','midnight-study'].includes(theme)) {
           const screenshot=await send('Page.captureScreenshot',{format:'png'});
           fs.writeFileSync(path.join(root,'qa',`${component}-${width}-${theme}.png`),Buffer.from(screenshot.data,'base64'));
