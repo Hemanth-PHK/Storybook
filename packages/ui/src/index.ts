@@ -16,6 +16,9 @@ export * from "./components/ThemeSwitcher";
 export * from "./components/Nav";
 export * from "./components/ErrorState";
 export * from "./components/QuizCard";
+export * from "./components/Avatar";
+export * from "./components/ProgressBar";
+export * from "./components/EmptyState";
 
 /* ============================================================================
    YOUR COMPONENTS TO BUILD
