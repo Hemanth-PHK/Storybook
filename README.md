@@ -57,8 +57,7 @@ packages/ui/
 │   ├── components/      one folder per component
 │   ├── utils/           cn() helper
 │   └── index.ts         public exports
-├── tailwind.config.ts   maps token names → CSS variables (the bridge)
-└── CONTRIBUTING.md      ← interns read this before building
+└── tailwind.config.ts   maps token names → CSS variables (the bridge)
 ```
 
 ## Adding a theme
